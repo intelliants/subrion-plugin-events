@@ -1,0 +1,91 @@
+#event-popup
+{
+	display: none;
+	width: 300px;
+	height: 235px;
+	padding: 10px;
+	position: absolute;
+	z-index: 1000;
+}
+
+#event-popup legend
+{
+	font-size: 18px;
+	line-height: 20px;
+	padding-bottom: 10px;
+	width: 100%;
+}
+
+#event-popup .progress
+{
+	margin: 80px auto;
+	width: 160px;
+	height: 14px;
+	text-align: center;
+}
+
+#event-popup .no-events
+{
+	text-align: center;
+	margin-top: 70px;
+	font-size: 18px;
+	font-style: italic;
+	color: #707070;
+}
+
+#event-popup .items
+{
+	margin-top: 2px;
+}
+
+#event-popup .item .description
+{
+	border: none;
+	font-size: 11px;
+	line-height: 14px;
+}
+
+#event-popup .item .date-range
+{
+	font-size: 11px;
+	line-height: 14px;
+	
+}
+
+#event-popup #view-all-events
+{
+	position: absolute;
+	bottom: 12px;
+	right: 12px;
+}
+
+#event-calendar .datepicker-inline {
+	width: 100%;
+	margin: 0 auto;
+}
+
+#event-calendar .table-condensed th,
+#event-calendar .table-condensed td
+{
+	padding: 2px 3px;
+}
+
+#block_event_calendar .box-content {
+	padding: 0 0 20px;
+}
+
+#block_event_calendar .datetimepicker-inline {
+	margin: 0 auto;
+	width: auto;
+}
+
+#block_event_calendar .datetimepicker-inline table,
+#block_event_calendar .datepicker-inline table {
+	width: 100%;
+}
+
+@media screen and (max-width: 979px) {
+	#block_event_calendar .datetimepicker-inline table {
+		font-size: 12px;
+	}
+}

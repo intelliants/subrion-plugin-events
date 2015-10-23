@@ -1,0 +1,214 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<plugin name="events">
+	<title>Events</title>
+	<summary>List of your events. Displays calendar of events in a separate box.</summary>
+	<author>Intelliants LLC</author>
+	<contributor>Intelliants LLC</contributor>
+	<version>3.4.0</version>
+	<date>2015-09-01</date>
+	<compatibility>3.4</compatibility>
+
+	<packageitems>
+		<item pages="view_member">events</item>
+	</packageitems>
+
+	<actions>
+		<action name="event_list" url="events/" icon="list" pages="event_list">View</action>
+		<action name="event_add" url="events/add/" icon="plus" pages="event_list,event_edit,event_add">Add</action>
+	</actions>
+
+	<adminpages>
+		<page name="event_list" url="events/" menus="menu" filename="index">Events</page>
+	</adminpages>
+
+	<configgroup name="events">Events</configgroup>
+	<config group="events" name="events" type="divider">Configuration</config>
+	<config group="events" name="events_week_start" values="Sunday,Monday" type="select" description="The day week starts by">Sunday</config>
+	<config group="events" name="events_auto_approval" values="0,1" type="radio" description="Events Auto Approval">0</config>
+	<config group="events" name="events_ajax_popup" values="0,1" type="radio" description="Enable popup in Calendar">1</config>
+	<config group="events" name="events_number_default" type="text" description="Number of events per page">10</config>
+	<config group="events" name="events_number_future" type="text" description="Number of events in Future Events block">10</config>
+	<config group="events" name="events_number_past" type="text" description="Number of events in Past Events block">5</config>
+	<config group="events" name="events_number_rss" type="text" description="Number of events per feed">10</config>
+	<config group="email_templates" type="divider" description="Events"><![CDATA[]]></config>
+	<config group="email_templates" type="radio" name="new_event_notification" values="1,0" description="New Event Submission">1</config>
+	<config group="email_templates" type="text" name="new_event_notification_subject">New event added by guest at {%SITE_NAME%}</config>
+	<config group="email_templates" type="textarea" name="new_event_notification_body" values="url|Events url">
+		<![CDATA[
+<h2>Greetings,</h2><p>You have a new event from guest.</p><p>You can view it and approve on {%URL%}.</p>
+		]]>
+	</config>
+
+
+	<pages>
+		<page name="events" url="events/" menus="main" service="0">Events</page>
+		<page name="event_add" url="events/add/" filename="manage" menus="account" service="0">Add Event</page>
+		<page name="event_my" url="profile/events/" filename="index" menus="account" service="0">My Events</page>
+		<page name="event_edit" url="events/edit/" filename="manage" service="0">Edit Event</page>
+		<page name="event_search" url="events/search/" filename="index" service="0">Searching for Events</page>
+		<page name="event_details" url="event/" filename="view" service="0">Event Details</page>
+		<page name="event_rss" url="events/rss/" filename="rss" service="1">RSS Feed</page>
+	</pages>
+
+	<permissions>
+		<permission type="group" type_id="4" access="0">event_my</permission>
+		<permission type="group" type_id="4" access="0">event_edit</permission>
+	</permissions>
+
+	<phrases>
+		<phrase category="admin" key="events_deleted">Events have been successfully removed.</phrase>
+		<phrase category="admin" key="incorrect_owner">Incorrect owner specified for the event.</phrase>
+		<phrase category="admin" key="incorrect_status">Specified status is incorrect.</phrase>
+		<phrase category="admin" key="item_is_not_specified">Item to be edited is not specified.</phrase>
+		<phrase category="admin" key="drag_and_drop_marker">You may correct location by dragging the marker</phrase>
+
+		<phrase category="common" key="date_end">Event ends</phrase>
+		<phrase category="common" key="date_start">Event starts</phrase>
+		<phrase category="common" key="description_is_empty">Description is empty</phrase>
+		<phrase category="common" key="detailed_description">Detailed description</phrase>
+		<phrase category="common" key="event_added">Event has been successfully added.</phrase>
+		<phrase category="common" key="event_updated">Event data has been successfully updated.</phrase>
+		<phrase category="common" key="events">Events</phrase>
+		<phrase category="common" key="incorrect_repeat_value">Repeat type is incorrect.</phrase>
+		<phrase category="common" key="monthly">monthly</phrase>
+		<phrase category="common" key="once">once</phrase>
+		<phrase category="common" key="recurring">recurring</phrase>
+		<phrase category="common" key="repeat">Repeat</phrase>
+		<phrase category="common" key="venue">Venue</phrase>
+		<phrase category="common" key="yearly">yearly</phrase>
+
+		<phrase category="frontend" key="about_the_event">Overview</phrase>
+		<phrase category="frontend" key="add_new_event">Add Event</phrase>
+		<phrase category="frontend" key="all_events_on_the_day">All events on this day</phrase>
+		<phrase category="frontend" key="closest_events">Closest Events</phrase>
+		<phrase category="frontend" key="empty">empty</phrase>
+		<phrase category="frontend" key="event_delete_confirmation">Are you sure want to delete event?</phrase>
+		<phrase category="frontend" key="event_deleted">Event has been successfully removed</phrase>
+		<phrase category="frontend" key="event_details">Details</phrase>
+		<phrase category="frontend" key="event_not_found">Requested event is not found.</phrase>
+		<phrase category="frontend" key="event_waiting_for_approval">Event has been submitted and waiting for adminstrative approval</phrase>
+		<phrase category="frontend" key="events_on_date">Events on :date</phrase>
+		<phrase category="frontend" key="events_rss_feed">Events RSS feed</phrase>
+		<phrase category="frontend" key="find_event">Find Event</phrase>
+		<phrase category="frontend" key="invalid_date_specified">Invalid date specified.</phrase>
+		<phrase category="frontend" key="listings_found">Events found</phrase>
+		<phrase category="frontend" key="month1">January</phrase>
+		<phrase category="frontend" key="month2">February</phrase>
+		<phrase category="frontend" key="month3">March</phrase>
+		<phrase category="frontend" key="month4">April</phrase>
+		<phrase category="frontend" key="month5">May</phrase>
+		<phrase category="frontend" key="month6">June</phrase>
+		<phrase category="frontend" key="month7">July</phrase>
+		<phrase category="frontend" key="month8">August</phrase>
+		<phrase category="frontend" key="month9">September</phrase>
+		<phrase category="frontend" key="month10">October</phrase>
+		<phrase category="frontend" key="month11">November</phrase>
+		<phrase category="frontend" key="month12">December</phrase>
+		<phrase category="frontend" key="no_events">No events to show.</phrase>
+		<phrase category="frontend" key="no_events_for_day">No events on this day.</phrase>
+		<phrase category="frontend" key="no_search_term_provided">Nothing to search</phrase>
+		<phrase category="frontend" key="published_by">Published by</phrase>
+		<phrase category="frontend" key="read_more">Read more</phrase>
+		<phrase category="frontend" key="today">Today</phrase>
+		<phrase category="frontend" key="wrong_parameters_provided">Wrong parameters provided.</phrase>
+	</phrases>
+
+	<hooks>
+		<hook name="phpCoreBeforePageDisplay" type="php" page_type="front">
+		<![CDATA[
+if (iaView::REQUEST_HTML == $iaView->getRequestType())
+{
+	$plugin = 'events';
+	$events = array();
+	$iaEvent = $iaCore->factoryPlugin($plugin, 'common', 'event');
+
+	if ($iaView->blockExists('future_events'))
+	{
+		$limit = $iaCore->get('events_number_future', 10);
+		$entries = $iaEvent->getFuture($limit);
+
+		$events['future'] = $entries;
+	}
+
+	if ($iaView->blockExists('past_events'))
+	{
+		$limit = $iaCore->get('events_number_past', 5);
+		$entries = $iaEvent->getPast($limit);
+
+		$events['past'] = $entries;
+	}
+
+	$iaView->assign('events', $events);
+}
+		]]>
+		</hook>
+	</hooks>
+
+	<blocks>
+		<block name="event_calendar" title="Calendar of Events" collapsible="1" position="left" type="smarty" filename="plugin:events:block.events-calendar.tpl"><![CDATA[]]></block>
+		<block name="events_search" title="Search for Events" position="top" type="smarty" sticky="0" pages="events,event_details,event_calendar,event_search">
+		<![CDATA[
+<form method="get" action="{$smarty.const.IA_URL}events/search/">
+	<div class="input-group">
+		<input type="text" class="form-control" name="term" id="event-search-box"{if isset($term)} value="{$term}"{/if}>
+		<span class="input-group-btn">
+			<button class="btn btn-primary" type="submit"><span class="fa fa-search"></span> {lang key='find_event'}</button>
+		</span>
+	</div>
+</form>
+
+{ia_print_css files='_IA_URL_plugins/events/templates/front/css/search'}
+		]]>
+		</block>
+		<block name="future_events" title="Upcoming Events" ollapsible="1" position="right" type="smarty" filename="plugin:events:block.future-events.tpl"><![CDATA[]]></block>
+		<block name="past_events" title="Past Events" collapsible="1" position="right" type="smarty" filename="plugin:events:block.past-events.tpl"><![CDATA[]]></block>
+	</blocks>
+
+	<install>
+		<sql>
+			<![CDATA[
+CREATE TABLE `{prefix}events` (
+	`id` mediumint(7) unsigned NOT NULL auto_increment,
+	`member_id` mediumint(8) unsigned NOT NULL,
+	`date` datetime NOT NULL,
+	`date_end` datetime NOT NULL,
+	`title` tinytext NOT NULL,
+	`venue` tinytext NOT NULL,
+	`latitude` varchar(64) NOT NULL,
+	`longitude` varchar(64) NOT NULL,
+	`description` text NOT NULL,
+	`image` tinytext NOT NULL,
+	`repeat` enum('none','monthly','yearly') NOT NULL default 'none',
+	`status` enum('inactive','active') NOT NULL default 'inactive',
+	`sponsored` tinyint(1) unsigned NOT NULL,
+	`sponsored_plan_id` smallint(5) unsigned NOT NULL,
+	PRIMARY KEY  (`id`),
+	KEY `INDEX` (`date`)
+) {mysql_version};
+			]]>
+		</sql>
+	</install>
+
+	<uninstall>
+		<sql>
+			<![CDATA[
+DROP TABLE IF EXISTS `{prefix}events`;
+			]]>
+		</sql>
+	</uninstall>
+
+	<upgrade>
+		<sql version="3.2.2">
+			<![CDATA[
+ALTER TABLE `{prefix}events` ADD `latitude` varchar(64) NOT NULL AFTER `venue`,
+ADD `longitude` varchar(64) NOT NULL AFTER `latitude`;
+			]]>
+		</sql>
+		<sql version="3.2.3">
+			<![CDATA[
+ALTER TABLE `{prefix}events` ADD `image` tinytext NOT NULL AFTER `description`;
+			]]>
+		</sql>
+
+	</upgrade>
+</plugin>
