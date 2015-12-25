@@ -70,6 +70,7 @@ if (iaView::REQUEST_HTML == $iaView->getRequestType())
 			case iaCore::ACTION_ADD:
 				$item = array(
 					'title' => '',
+					'category_id' => 0,
 					'date' => '',
 					'date_end' => '',
 					'venue' => '',
@@ -121,6 +122,7 @@ if (iaView::REQUEST_HTML == $iaView->getRequestType())
 			}
 
 			$item['title'] = $title;
+			$item['category_id'] = (int)$_POST['category_id'];
 			$item['date'] = $_POST['date'];
 			$item['date_end'] = $_POST['date_end'];
 			$item['description'] = $description;
@@ -217,15 +219,16 @@ if (iaView::REQUEST_HTML == $iaView->getRequestType())
 		$options = array('list' => 'go_to_list', 'add' => 'add_another_one', 'stay' => 'stay_here');
 		$iaView->assign('goto', $options);
 
+		$iaView->assign('categories', $iaEvent->getCategoryOptions());
 		$iaView->assign('repeat', $iaEvent->getRepeatOptions());
 		$iaView->assign('status', $iaEvent->getStatusOptions());
 		$iaView->assign('item', $item);
 
-		$iaView->display('manage');
+		$iaView->display('form-events');
 	}
 	else
 	{
-		$iaView->grid('_IA_URL_plugins/events/js/admin/grid');
+		$iaView->grid('_IA_URL_plugins/events/js/admin/events');
 	}
 }
 

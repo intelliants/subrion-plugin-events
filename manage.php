@@ -43,6 +43,7 @@ else
 
 	$item = array(
 		'title' => '',
+		'category_id' => 0,
 		'date' => $date,
 		'date_end' => $date,
 		'venue' => '',
@@ -80,6 +81,7 @@ if (isset($_POST['create']))
 		$messages[] = iaLanguage::get('incorrect_repeat_value');
 	}
 
+	$item['category_id'] = (int)$_POST['category_id'];
 	$item['date'] = $_POST['date'];
 	$item['date_end'] = $_POST['date_end'];
 	$item['repeat'] = $_POST['repeat'];
@@ -89,13 +91,37 @@ if (isset($_POST['create']))
 
 	if (empty($messages))
 	{
+		if (isset($_FILES['image']['tmp_name']) && $_FILES['image']['tmp_name'])
+		{
+			$iaPicture = $iaCore->factory('picture');
+
+			$info = array(
+				'image_width' => 1000,
+				'image_height' => 750,
+				'thumb_width' => 250,
+				'thumb_height' => 250,
+				'resize_mode' => iaPicture::CROP
+			);
+
+			if ($image = $iaPicture->processImage($_FILES['image'], iaUtil::getAccountDir(), iaUtil::generateToken(), $info))
+			{
+				if ($item['image']) // it has an already assigned image
+				{
+					$iaPicture = $iaCore->factory('picture');
+					$iaPicture->delete($item['image']);
+				}
+
+				$item['image'] = $image;
+			}
+		}
+
 		if (isset($_POST['id']) && is_numeric($_POST['id']) && $_POST['id'])
 		{
 			if ($_POST['id'] != $iaCore->requestPath[0])
 			{
 				return iaView::errorPage(iaVIew::ERROR_INTERNAL, iaLanguage::get('internal_error'));
 			}
-			$iaDb->update($item);
+			$result = $iaDb->update($item);
 			$iaView->setMessages(iaLanguage::get('event_updated'), iaVIew::SUCCESS);
 		}
 		else
@@ -133,21 +159,21 @@ if (isset($_POST['create']))
 				}
 				else
 				{
-					$iaView->setMessages($messages, 'success');
+					$iaView->setMessages($messages, iaView::SUCCESS);
 				}
 			}
 			else
 			{
-				$iaView->setMessages($messages, 'success');
+				$iaView->setMessages($messages, iaView::SUCCESS);
 			}
 		}
 		if (!iaUsers::hasIdentity() && !$iaAcl->isAccessible('event_edit'))
 		{
-			iaUtil::go_to($iaEvent->printf(':rootevents/', array('root' => IA_URL)));
+			iaUtil::go_to(iaDb::printf(':rootevents/', array('root' => IA_URL)));
 		}
 		else
 		{
-			iaUtil::go_to($iaEvent->printf(':rootevents/edit/:id/', array('root' => IA_URL, 'id' => $item['id'])));
+			iaUtil::go_to(iaDb::printf(':rootevents/edit/:id/', array('root' => IA_URL, 'id' => $item['id'])));
 		}
 	}
 	else
@@ -156,6 +182,7 @@ if (isset($_POST['create']))
 	}
 }
 
+$iaView->assign('categories', $iaEvent->getCategoryOptions());
 $iaView->assign('repeat', $iaEvent->getRepeatOptions());
 $iaView->assign('item', $item);
 

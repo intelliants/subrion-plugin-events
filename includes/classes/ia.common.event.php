@@ -3,17 +3,23 @@
 
 class iaEvent extends abstractCore
 {
-
 	protected static $_table = 'events';
-	protected static $_item = 'events';
+	protected $_categoriesTable = 'events_categories';
 
-	protected $_statuses = array(iaCore::STATUS_ACTIVE, iaCore::STATUS_INACTIVE);
+	protected static $_itemName = 'events';
 
 	protected $_repeatOptions = array('none', 'monthly', 'yearly');
-	protected $_statusOptions = array('active', 'inactive');
+	protected $_statusOptions = array(iaCore::STATUS_ACTIVE, iaCore::STATUS_INACTIVE);
+
 	protected $_dateFormat = 'Y-m-d H:i';
 
-	protected function _get ($conditions = array(), $additional = false, $start, $limit, $defaultSorting = true)
+
+	public function getCategoriesTable()
+	{
+		return $this->_categoriesTable;
+	}
+
+	protected function _get($conditions = array(), $additional = false, $start, $limit, $defaultSorting = true)
 	{
 		$where = (string)'';
 		if ($conditions)
@@ -44,7 +50,14 @@ class iaEvent extends abstractCore
 			LIMIT :start, :limit";
 
 		$dtFormat = $this->iaCore->get('date_format') . ' %H:%i';
-		$sql = $this->printf($sql, array('format' => $dtFormat, 'table' => self::getTable(true), 'memberstable' => iaUsers::getTable(true), 'direction' => $defaultSorting ? 'ASC' : 'DESC', 'start' => $start, 'limit' => $limit));
+		$sql = iaDb::printf($sql, array(
+			'format' => $dtFormat,
+			'table' => self::getTable(true),
+			'memberstable' => iaUsers::getTable(true),
+			'direction' => $defaultSorting ? iaDb::ORDER_ASC : iaDb::ORDER_DESC,
+			'start' => (int)$start,
+			'limit' => (int)$limit)
+		);
 
 		$result = $this->iaDb->getAll($sql);
 
@@ -53,21 +66,10 @@ class iaEvent extends abstractCore
 
 	public function getItemName()
 	{
-		$_item = 'none';
-		if (version_compare('5.3.0', PHP_VERSION, '<='))
-		{
-			eval('$_item = static::$_item;');
-		}
-		else
-		{
-			$class = get_called_class();
-			eval('$_item = ' . $class . '::$_item;');
-		}
-
-		return $_item;
+		return self::$_itemName;
 	}
 
-	public function url ($eventData)
+	public function url($eventData)
 	{
 		$alias = $eventData['title'];
 
@@ -87,11 +89,11 @@ class iaEvent extends abstractCore
 
 		$alias = iaSanitize::alias($alias);
 
-		return $this->printf(':urlevent/:title-:id.html', array('url' => IA_URL, 'title' => $alias, 'id' => $eventData['id']));
+		return iaDb::printf(':urlevent/:title-:id.html', array('url' => IA_URL, 'title' => $alias, 'id' => $eventData['id']));
 	}
 
 
-	public function _processValues ($entries)
+	protected function _processValues($entries)
 	{
 		$result = $entries;
 		if (is_array($result) && $result)
@@ -101,77 +103,77 @@ class iaEvent extends abstractCore
 				$result[$key]['url'] = $this->url($event);
 			}
 		}
+
 		return $result;
 	}
 
-	public function printf ($format, $args = array())
-	{
-		$result = (string)$format;
-		if ($args)
-		{
-			$search = array_keys($args);
-			foreach ($search as $key => $item)
-			{
-				$search[$key] = ':' . $item;
-			}
-			$result = str_replace($search, array_values($args), $result);
-		}
-		return $result;
-	}
-
-	public function getRepeatOptions ()
+	public function getRepeatOptions()
 	{
 		$result = array();
 		foreach ($this->_repeatOptions as $option)
 		{
-			$result[$option] = $option == 'none' ? iaLanguage::get('once') : iaLanguage::get($option);
+			$result[$option] = iaLanguage::get($option == 'none' ? 'once' : $option);
 		}
+
 		return $result;
 	}
 
-	public function getStatusOptions ()
+	public function getStatusOptions()
 	{
 		$result = array();
 		foreach ($this->_statusOptions as $option)
 		{
 			$result[$option] = iaLanguage::get($option);
 		}
+
 		return $result;
 	}
 
-	public function getDateFormat ()
+	public function getCategoryOptions()
+	{
+		return $this->iaDb->keyvalue(array('id', 'title'), null, $this->getCategoriesTable());
+	}
+
+	public function getCategories()
+	{
+		return $this->iaDb->all(iaDb::ALL_COLUMNS_SELECTION, iaDb::convertIds(iaCore::STATUS_ACTIVE, 'status'), null, null, $this->getCategoriesTable());
+	}
+
+	public function getDateFormat()
 	{
 		return $this->_dateFormat;
 	}
 
-	public function get ($conditions, $start, $limit, $additionalStatement = false, $direction = true)
+	public function get($conditions, $start, $limit, $additionalStatement = false, $direction = true, $ignoreStatus = false)
 	{
-		return $this->_get(array_merge($conditions, array('status' => 'active')), $additionalStatement ? $additionalStatement : null, $start, $limit, $direction);
+		$ignoreStatus || $conditions['status'] = iaCore::STATUS_ACTIVE;
+
+		return $this->_get(array_merge($conditions), $additionalStatement ? $additionalStatement : null, $start, $limit, $direction);
 	}
 
-	public function getForMonth ($month, $year)
+	public function getForMonth($month, $year)
 	{
 		$sql = "SELECT `title`, DAYOFMONTH(`date`) `day_start`, DAYOFMONTH(`date_end`) `day_end` FROM `:table` WHERE `status` = 'active' AND (MONTH(`date`) = ':month' AND YEAR(`date`) = ':year' AND `repeat` = 'none') OR (`repeat` = 'yearly' AND MONTH(`date`) = ':month') OR (`repeat` = 'monthly')";
-		$sql = $this->printf($sql, array('table' => self::getTable(true), 'month' => $month, 'year' => $year));
+		$sql = iaDb::printf($sql, array('table' => self::getTable(true), 'month' => $month, 'year' => $year));
 
 		return $this->iaCore->iaDb->getAll($sql);
 	}
 
-	public function getFuture ($limit)
+	public function getFuture($limit)
 	{
-		return $this->_get(array('status' => 'active'), "`date` > DATE_ADD(NOW(), INTERVAL 1 MINUTE)", 0, $limit);
+		return $this->_get(array('status' => iaCore::STATUS_ACTIVE), "`date` > DATE_ADD(NOW(), INTERVAL 1 MINUTE)", 0, $limit);
 	}
 
-	public function getPast ($limit)
+	public function getPast($limit)
 	{
-		return $this->_get(array('status' => 'active'), "`date_end` < DATE_SUB(NOW(), INTERVAL 1 MINUTE)", 0, $limit, false);
+		return $this->_get(array('status' => iaCore::STATUS_ACTIVE), "`date_end` < DATE_SUB(NOW(), INTERVAL 1 MINUTE)", 0, $limit, false);
 	}
 
-	public function getByDate ($date, $limit)
+	public function getByDate($date, $limit)
 	{
 		$conditions = "DATE_FORMAT(t1.`date`, '%Y-%m-%d') <= '" . $date . "' AND "
 						. "DATE_FORMAT(t1.`date_end`, '%Y-%m-%d') >= '" . $date . "'";
-		$this->_get(array('status' => 'active'), $conditions, 0, $limit);
-		return $this->_get(array('status' => 'active'), $conditions, 0, $limit);
+
+		return $this->_get(array('status' => iaCore::STATUS_ACTIVE), $conditions, 0, $limit);
 	}
 }

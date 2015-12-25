@@ -62,7 +62,7 @@ if (iaView::REQUEST_HTML == $iaView->getRequestType())
 			}
 			else
 			{
-				$stmt = $iaEvent->printf("`id` = ':id' AND `member_id` = ':owner'", array('id' => $eventId, 'owner' => iaUsers::getIdentity()->id));
+				$stmt = iaDb::printf("`id` = ':id' AND `member_id` = ':owner'", array('id' => $eventId, 'owner' => iaUsers::getIdentity()->id));
 				$iaDb->delete($stmt);
 
 				$iaUtil->redirect(iaLanguage::get('thanks'), iaLanguage::get('event_deleted'), IA_URL . 'profile/events/');
@@ -76,9 +76,9 @@ if (iaView::REQUEST_HTML == $iaView->getRequestType())
 
 	if (isset($iaCore->requestPath[0]))
 	{
-		switch ($iaCore->requestPath[0])
+		switch (true)
 		{
-			case 'date':
+			case ('date' == $iaCore->requestPath[0]):
 				$offset = array('year' => 1, 'month' => 2, 'day' => 3);
 				$date = array(
 					$offset['year'] => intval($iaCore->requestPath[1]),
@@ -91,17 +91,30 @@ if (iaView::REQUEST_HTML == $iaView->getRequestType())
 				}
 
 				$stmt = sprintf('%d-%02d-%02d', $date[$offset['year']], $date[$offset['month']], $date[$offset['day']]);
-				$events	= $iaEvent->getByDate($stmt, 1000);
+				$events = $iaEvent->getByDate($stmt, 1000);
 
 				$title = sprintf('%02d %s %d', $date[$offset['day']], iaLanguage::get('month' . $date[$offset['month']]), $date[$offset['year']]);
 
 				iaBreadcrumb::add(iaLanguage::get('events'), IA_URL . 'events/');
 				iaBreadcrumb::replaceEnd($title, IA_SELF);
 
-				$title = $iaEvent->printf(iaLanguage::get('events_on_date'), array('date' => $title));
+				$title = iaDb::printf(iaLanguage::get('events_on_date'), array('date' => $title));
 				$iaView->title($title);
 
 				break;
+
+			case !empty($category = $iaDb->row(iaDb::ALL_COLUMNS_SELECTION, iaDb::convertIds($iaCore->requestPath[0], 'slug'), $iaEvent->getCategoriesTable())):
+				iaBreadcrumb::add(iaLanguage::get('events'), IA_URL . 'events/');
+				iaBreadcrumb::replaceEnd($category['title'], IA_SELF);
+
+				$iaView->title($category['title']);
+
+				$events = $iaEvent->get(array('category_id' => $category['id']), $start, $limit);
+
+				break;
+
+			default:
+				return iaView::errorPage(iaView::ERROR_NOT_FOUND);
 		}
 	}
 	elseif ('event_my' == $iaView->name())
@@ -111,7 +124,7 @@ if (iaView::REQUEST_HTML == $iaView->getRequestType())
 			return iaView::accessDenied();
 		}
 
-		$events = $iaEvent->get(array('member_id' => iaUsers::getIdentity()->id), $start, $limit);
+		$events = $iaEvent->get(array('member_id' => iaUsers::getIdentity()->id), $start, $limit, false, true, true);
 	}
 	elseif ('event_search' == $iaView->name())
 	{
@@ -127,7 +140,7 @@ if (iaView::REQUEST_HTML == $iaView->getRequestType())
 			return iaView::errorPage(iaLanguage::get('no_search_term_provided'));
 		}
 
-		$stmt = $iaEvent->printf("CONCAT(t1.`title`, t1.`description`, t1.`venue`) LIKE '%:term%'", array('term' => iaSanitize::sql($term)));
+		$stmt = iaDb::printf("CONCAT(t1.`title`, t1.`description`, t1.`venue`) LIKE '%:term%'", array('term' => iaSanitize::sql($term)));
 		$events = $iaEvent->get(array(), $start, $limit, $stmt);
 
 		iaBreadcrumb::add(iaLanguage::get('events'), IA_URL . 'events/');
@@ -143,9 +156,10 @@ if (iaView::REQUEST_HTML == $iaView->getRequestType())
 
 	$paginator['total'] = $iaDb->foundRows();
 
-	$iaView->assign('paginator', $paginator);
-	$iaView->set('actions', $pageActions);
 	$iaView->assign('items', $events);
+	$iaView->assign('paginator', $paginator);
+
+	$iaView->set('actions', $pageActions);
 
 	$iaView->display('index');
 }

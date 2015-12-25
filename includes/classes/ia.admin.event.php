@@ -4,6 +4,7 @@
 class iaEvent extends abstractPlugin
 {
 	protected static $_table = 'events';
+	protected $_categoriesTable = 'events_categories';
 
 
 	public function gridRead($params, $columns, array $filterParams = array(), array $persistentConditions = array())
