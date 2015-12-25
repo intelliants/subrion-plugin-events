@@ -1,31 +1,38 @@
-#event-popup
-{
+#event-popup {
 	display: none;
-	width: 300px;
-	height: 235px;
-	padding: 10px;
 	position: absolute;
+	width: 300px;
+	height: auto;
+	padding: 10px;
 	z-index: 1000;
+	background-image: -webkit-linear-gradient(top, #f0f0f0 0, #f5f5f5 100%);
+	background-image: -o-linear-gradient(top, #f0f0f0 0, #f5f5f5 100%);
+	background-image: linear-gradient(to bottom, #f0f0f0 0, #f5f5f5 100%);
 }
 
-#event-popup legend
-{
+#event-popup legend {
+	width: 100%;
 	font-size: 18px;
 	line-height: 20px;
-	padding-bottom: 10px;
-	width: 100%;
+	border-bottom: none;
 }
 
-#event-popup .progress
-{
+#event-popup .ia-item {
+	margin-top: 0;
+}
+
+#event-popup .ia-item:last-child {
+	margin-bottom: 20px;
+}
+
+#event-popup .progress {
 	margin: 80px auto;
 	width: 160px;
 	height: 14px;
 	text-align: center;
 }
 
-#event-popup .no-events
-{
+#event-popup .no-events {
 	text-align: center;
 	margin-top: 70px;
 	font-size: 18px;
@@ -33,27 +40,22 @@
 	color: #707070;
 }
 
-#event-popup .items
-{
+#event-popup .items {
 	margin-top: 2px;
 }
 
-#event-popup .item .description
-{
+#event-popup .item .description {
 	border: none;
 	font-size: 11px;
 	line-height: 14px;
 }
 
-#event-popup .item .date-range
-{
+#event-popup .item .date-range {
 	font-size: 11px;
 	line-height: 14px;
-	
 }
 
-#event-popup #view-all-events
-{
+#event-popup #view-all-events {
 	position: absolute;
 	bottom: 12px;
 	right: 12px;
@@ -65,8 +67,7 @@
 }
 
 #event-calendar .table-condensed th,
-#event-calendar .table-condensed td
-{
+#event-calendar .table-condensed td {
 	padding: 2px 3px;
 }
 

@@ -39,13 +39,13 @@ if (iaView::REQUEST_HTML == $iaView->getRequestType())
 	);
 
 	$pageActions[] = array(
-		'icon' => 'icon-plus-sign',
+		'icon' => 'plus-circle',
 		'title' => iaLanguage::get('add_new_event'),
 		'url' => IA_URL . 'events/add/'
 	);
 
 	$pageActions[] = array(
-		'icon' => 'icon-rss',
+		'icon' => 'rss',
 		'title' => '',
 		'url' => IA_URL . 'events/rss/',
 		'classes' => 'btn-warning'

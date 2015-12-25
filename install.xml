@@ -4,9 +4,9 @@
 	<summary>List of your events. Displays calendar of events in a separate box.</summary>
 	<author>Intelliants LLC</author>
 	<contributor>Intelliants LLC</contributor>
-	<version>3.4.0</version>
-	<date>2015-09-01</date>
-	<compatibility>3.4</compatibility>
+	<version>4.0.0</version>
+	<date>2015-12-25</date>
+	<compatibility>4.0</compatibility>
 
 	<packageitems>
 		<item pages="view_member">events</item>
@@ -145,7 +145,7 @@ if (iaView::REQUEST_HTML == $iaView->getRequestType())
 	</hooks>
 
 	<blocks>
-		<block name="event_calendar" title="Calendar of Events" collapsible="1" position="left" type="smarty" filename="plugin:events:block.events-calendar.tpl"><![CDATA[]]></block>
+		<block name="event_calendar" title="Calendar of Events" collapsible="0" position="left" type="smarty" filename="block.events-calendar"><![CDATA[]]></block>
 		<block name="events_search" title="Search for Events" position="top" type="smarty" sticky="0" pages="events,event_details,event_calendar,event_search">
 		<![CDATA[
 <form method="get" action="{$smarty.const.IA_URL}events/search/">
@@ -160,8 +160,8 @@ if (iaView::REQUEST_HTML == $iaView->getRequestType())
 {ia_print_css files='_IA_URL_plugins/events/templates/front/css/search'}
 		]]>
 		</block>
-		<block name="future_events" title="Upcoming Events" ollapsible="1" position="right" type="smarty" filename="plugin:events:block.future-events.tpl"><![CDATA[]]></block>
-		<block name="past_events" title="Past Events" collapsible="1" position="right" type="smarty" filename="plugin:events:block.past-events.tpl"><![CDATA[]]></block>
+		<block name="future_events" title="Upcoming Events" collapsible="0" position="right" type="smarty" filename="block.future-events"><![CDATA[]]></block>
+		<block name="past_events" title="Past Events" collapsible="0" position="right" type="smarty" filename="block.past-events"><![CDATA[]]></block>
 	</blocks>
 
 	<install>
@@ -196,19 +196,4 @@ DROP TABLE IF EXISTS `{prefix}events`;
 			]]>
 		</sql>
 	</uninstall>
-
-	<upgrade>
-		<sql version="3.2.2">
-			<![CDATA[
-ALTER TABLE `{prefix}events` ADD `latitude` varchar(64) NOT NULL AFTER `venue`,
-ADD `longitude` varchar(64) NOT NULL AFTER `latitude`;
-			]]>
-		</sql>
-		<sql version="3.2.3">
-			<![CDATA[
-ALTER TABLE `{prefix}events` ADD `image` tinytext NOT NULL AFTER `description`;
-			]]>
-		</sql>
-
-	</upgrade>
 </plugin>

@@ -17,7 +17,7 @@
 				<div class="col col-lg-4">
 					<div class="input-group">
 						<input type="text" name="date" class="js-datepicker" value="{$item.date}" data-date-show-time="true" data-date-format="yyyy-mm-dd H:i" readonly>
-						<span class="input-group-addon js-datepicker-toggle"><i class="i-calendar"></i></span>
+						<span class="input-group-addon js-datepicker-toggle"><span class="i-calendar"></span></span>
 					</div>
 				</div>
 			</div>
@@ -26,7 +26,7 @@
 				<div class="col col-lg-4">
 					<div class="input-group">
 						<input type="text" name="date_end" class="js-datepicker" value="{$item.date_end}" data-date-show-time="true" data-date-format="yyyy-mm-dd H:i" readonly>
-						<span class="input-group-addon js-datepicker-toggle"><i class="i-calendar"></i></span>
+						<span class="input-group-addon js-datepicker-toggle"><span class="i-calendar"></span></span>
 					</div>
 				</div>
 			</div>
@@ -51,7 +51,7 @@
 								{printImage imgfile=$item.image}
 							</a>
 							<div class="caption">
-								<a class="btn btn-small btn-danger" href="javascript:void(0);" title="{lang key='delete'}" onclick="return intelli.admin.removeFile('{$item.image}',this,'events','image','{$item.id}')"><i class="i-remove-sign"></i></a>
+								<a class="btn btn-small btn-danger" href="javascript:void(0);" title="{lang key='delete'}" onclick="return intelli.admin.removeFile('{$item.image}',this,'events','image','{$item.id}')"><span class="i-remove-sign"></span></a>
 							</div>
 						</div>
 					{/if}

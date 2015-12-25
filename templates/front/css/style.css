@@ -1,20 +1,37 @@
-#vtip { display: none; position: absolute; padding: 10px; left: 5px; font-size: 0.8em; font-family:Verdana; background-color: white; border: 1px solid #a6c9e2; -moz-border-radius: 5px; border-radius: 5px; -webkit-border-radius: 5px; z-index: 9999 }
-#vtipArrow { position: absolute; top: -10px; left: 5px }
+#vtip {
+	display: none;
+	position: absolute;
+	left: 5px;
+	padding: 10px;
+	font-size: 0.8em;
+	font-family: Verdana;
+	background-color: white;
+	border: 1px solid #a6c9e2;
+	border-radius: 5px;
+	z-index: 9999
+}
 
-.required-label	{ color: red; font-size: 125%; font-weight: bold; }
+#vtipArrow {
+	position: absolute;
+	top: -10px;
+	left: 5px
+}
 
-.event .description
-{
+.required-label {
+	color: red;
+	font-size: 125%;
+	font-weight: bold;
+}
+
+.event .description {
 	border: none;
 }
 
-.event legend.event-title
-{
+.event legend.event-title {
 	border: none;
 }
 
-#event-gmap
-{
+#event-gmap {
 	width: 96%;
 	height: 300px;
 }
@@ -33,4 +50,45 @@
 
 #js-gmap-renderer img {
 	max-width: none;
+}
+
+
+
+/* Future & Past events blocks */
+.events-list .media-heading {
+	font-size: 16px;
+}
+
+
+
+/* Events list & Events search page */
+.page-events .content__header,
+.page-event_search .content__header {
+	margin-top: 25px;
+	margin-bottom: 10px;
+}
+
+.event .media-info {
+	margin: 10px -15px -15px;
+	padding: 5px 15px;
+	font-size: 13px;
+	background-color: #f5f5f5;
+	border-top: 1px solid #ddd;
+}
+
+
+
+/* Add Event page */
+.add-event label {
+	width: 50%;
+}
+
+.add-event .form-group--fullwidth label {
+	width: 100%;
+}
+
+.add-event label > input,
+.add-event label > textarea,
+.add-event label > select {
+	font-weight: normal;
 }

@@ -38,7 +38,7 @@ $(function() {
 					description = $('<div>').addClass('description').text(description);
 					date = new Date(data.date);
 					
-					dateRange = $('<span>').addClass('date-range').html('<i class="icon-time"></i>  ' + item.date + ' - ' + item.date_end);
+					dateRange = $('<span>').addClass('date-range text-success').html('<i class="icon-time"></i>  ' + item.date + ' - ' + item.date_end);
 
 					details = $('<p>').addClass('ia-item-date').append(dateRange).append(description);
 
