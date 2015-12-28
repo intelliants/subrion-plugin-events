@@ -155,7 +155,7 @@ if (iaView::REQUEST_HTML == $iaView->getRequestType())
 	</hooks>
 
 	<blocks>
-		<block name="event_categories" title="Event Categories" collapsible="0" position="top" type="smarty" filename="block.categories"><![CDATA[]]></block>
+		<block name="event_categories" title="Event Categories" collapsible="0" position="right" type="smarty" filename="block.categories"><![CDATA[]]></block>
 		<block name="event_calendar" title="Calendar of Events" collapsible="0" position="left" type="smarty" filename="block.events-calendar"><![CDATA[]]></block>
 		<block name="events_search" title="Search for Events" position="top" type="smarty" sticky="0" pages="events,event_details,event_calendar,event_search">
 		<![CDATA[
