@@ -103,7 +103,7 @@ if (iaView::REQUEST_HTML == $iaView->getRequestType())
 
 				break;
 
-			case !empty($category = $iaDb->row(iaDb::ALL_COLUMNS_SELECTION, iaDb::convertIds($iaCore->requestPath[0], 'slug'), $iaEvent->getCategoriesTable())):
+			case ($category = $iaDb->row(iaDb::ALL_COLUMNS_SELECTION, iaDb::convertIds($iaCore->requestPath[0], 'slug'), $iaEvent->getCategoriesTable())):
 				iaBreadcrumb::add(iaLanguage::get('events'), IA_URL . 'events/');
 				iaBreadcrumb::replaceEnd($category['title'], IA_SELF);
 
