@@ -24,7 +24,7 @@ if ('event_edit' == $iaView->name())
 
 		if (empty($item))
 		{
-			return iaView::errorPage(iaView::ERROR_NOT_FOUND, _('event_not_found'));
+			return iaView::errorPage(iaView::ERROR_NOT_FOUND, iaLanguage::get('event_not_found'));
 		}
 
 		$iaView->assign('item', $item);

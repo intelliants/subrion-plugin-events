@@ -64,7 +64,6 @@
 		<phrase category="admin" key="edit_category">Edit Category</phrase>
 		<phrase category="admin" key="edit_event">Edit Event</phrase>
 		<phrase category="admin" key="events_deleted">Events have been successfully removed.</phrase>
-		<phrase category="admin" key="item_is_not_specified">Item to be edited is not specified.</phrase>
 		<phrase category="admin" key="slug">Slug</phrase>
 
 		<phrase category="common" key="date_end">Event ends</phrase>
@@ -114,7 +113,6 @@
 		<phrase category="frontend" key="published_by">Published by</phrase>
 		<phrase category="frontend" key="read_more">Read more</phrase>
 		<phrase category="frontend" key="today">Today</phrase>
-		<phrase category="frontend" key="wrong_parameters_provided">Wrong parameters provided.</phrase>
 	</phrases>
 
 	<hooks>

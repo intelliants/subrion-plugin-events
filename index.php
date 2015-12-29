@@ -58,7 +58,7 @@ if (iaView::REQUEST_HTML == $iaView->getRequestType())
 			$eventId = intval($iaCore->requestPath[0]);
 			if (empty($eventId))
 			{
-				return $iaView->errorPage(iaLanguage::get('wrong_parameters_provided'));
+				return $iaView->errorPage(iaLanguage::get('invalid_parameters'));
 			}
 			else
 			{
