@@ -21,9 +21,8 @@ $iaView->assign('image', array(
 	'logo' => IA_TPL_URL . '/img/logo.gif',
 	'title' => iaLanguage::get('events') . $iaCore->get('suffix')
 ));
+
 $iaView->assign('items', $events);
 
-$iaView->set('header', 'none');
-$iaView->set('footer', 'none');
-
+$iaView->disableLayout();
 $iaView->display('rss');

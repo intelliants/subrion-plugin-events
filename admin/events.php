@@ -1,235 +1,179 @@
 <?php
 //##copyright##
 
-$iaDb->setTable('events');
-
-if (iaView::REQUEST_JSON == $iaView->getRequestType())
+class iaBackendController extends iaAbstractControllerPluginBackend
 {
-	$iaEvent = $iaCore->factoryPlugin('events', iaCore::ADMIN, 'event');
+	protected $_name = 'events';
 
-	switch ($pageAction)
+	protected $_gridColumns = array('title', 'member_id', 'date', 'date_end', 'status');
+	protected $_gridFilters = array('status' => self::EQUAL);
+	protected $_gridQueryMainTableAlias = 'e';
+
+	protected $_phraseAddSuccess = 'event_added';
+	protected $_phraseEditSuccess = 'event_updated';
+	protected $_phraseGridEntriesDeleted = 'events_deleted';
+
+
+	public function init()
 	{
-		case iaCore::ACTION_READ:
-			$params = array();
-			if (isset($_GET['text']) && $_GET['text'])
-			{
-				$stmt = '(`title` LIKE :text OR `body` LIKE :text)';
-				$iaDb->bind($stmt, array('text' => '%' . $_GET['text'] . '%'));
-
-				$params[] = $stmt;
-			}
-
-			$output = $iaEvent->gridRead($_GET,
-				array('title', 'member_id', 'date', 'date_end', 'status'),
-				array('status' => 'equal'),
-				$params
-			);
-
-			break;
-
-		case iaCore::ACTION_EDIT:
-			$output = $iaEvent->gridUpdate($_POST);
-
-			break;
-
-		case iaCore::ACTION_DELETE:
-			$output = $iaEvent->gridDelete($_POST);
+		$this->_template = 'form-' . $this->getName();
+		
+		$this->setHelper($this->_iaCore->factoryPlugin($this->getPluginName(), 'common', 'event'));
 	}
 
-	$iaView->assign($output);
-}
-
-if (iaView::REQUEST_HTML == $iaView->getRequestType())
-{
-	if (iaCore::ACTION_ADD == $pageAction || iaCore::ACTION_EDIT == $pageAction)
+	protected function _modifyGridParams(&$conditions, &$values, array $params)
 	{
-		switch ($pageAction)
+		if (!empty($params['text']))
 		{
-			case iaCore::ACTION_EDIT:
-				if (isset($iaCore->requestPath[0]) && is_numeric($iaCore->requestPath[0]))
-				{
-					$stmt = sprintf('`id` = %d', (int)$iaCore->requestPath[0]);
-					$item = $iaDb->row(iaDb::ALL_COLUMNS_SELECTION, $stmt);
+			$conditions[] = '(e.`title` LIKE :text OR e.`description` LIKE :text)';
+			$values['text'] = '%' . iaSanitize::sql($params['text']) . '%';
+		}
+	}
 
-					if (empty($item))
-					{
-						return iaView::errorPage(iaView::ERROR_NOT_FOUND, iaLanguage::get('item_is_not_specified'));
-					}
+	protected function _gridQuery($columns, $where, $order, $start, $limit)
+	{
+		$sql =
+			'SELECT SQL_CALC_FOUND_ROWS :columns, '
+				. 'IF(m.`fullname` != "", m.`fullname`, m.`username`) `owner`, '
+				. '1 `update`, 1 `delete` '
+			.'FROM `:prefix:table_events` e '
+			.'LEFT JOIN `:prefix:table_members` m ON (m.`id` = e.`member_id`) '
+			. ($where ? 'WHERE ' . $where . ' ' : '') . $order . ' '
+			. 'LIMIT :start, :limit';
+		$sql = iaDb::printf($sql, array(
+			'columns' => $columns,
+			'prefix' => $this->_iaDb->prefix,
+			'table_events' => self::getTable(),
+			'table_members' => iaUsers::getTable(),
+			'start' => $start,
+			'limit' => $limit
+		));
 
-					$item['date'] = substr($item['date'], 0, -3);
-					$item['date_end'] = substr($item['date_end'], 0, -3);
-					$item['member'] = $iaDb->one('username', '`id` = ' . $item['member_id'], iaUsers::getTable());
-				}
-				else
-				{
-					return iaView::errorPage(iaLanguage::get('item_is_not_specified'));
-				}
+		return $this->_iaDb->getAll($sql);
+	}
 
-				break;
+	protected function _entryDelete($entryId)
+	{
+		$row = $this->getById($entryId);
 
-			case iaCore::ACTION_ADD:
-				$item = array(
-					'title' => '',
-					'category_id' => 0,
-					'date' => '',
-					'date_end' => '',
-					'venue' => '',
-					'latitude' => '',
-					'longitude' => '',
-					'description' => '',
-					'image' => '',
-					'repeat' => 'none',
-					'status' => 'active',
-					'member' => iaUsers::getIdentity()->username,
-					'sponsored' => 0,
-					'sponsored_plan_id' => 0
-				);
+		$result = parent::_entryDelete($entryId);
+
+		if ($result && !empty($row['image']))
+		{
+			$iaPicture = $this->_iaCore->factory('picture');
+			$iaPicture->delete($row['image']);
 		}
 
-		$iaEvent = $iaCore->factoryPlugin(IA_CURRENT_PLUGIN, 'common', 'event');
+		return $result;
+	}
 
-		$iaPlan = $iaCore->factory('plan');
-		$plans = $iaPlan->getPlans($iaEvent->getItemName());
+	protected function _setDefaultValues(array &$entry)
+	{
+		$entry = array(
+			'title' => '',
+			'category_id' => 0,
+			'date' => '',
+			'date_end' => '',
+			'venue' => '',
+			'latitude' => '',
+			'longitude' => '',
+			'description' => '',
+			'image' => '',
+			'repeat' => 'none',
+			'status' => iaCore::STATUS_ACTIVE,
+			'member_id' => iaUsers::getIdentity()->id,
+			'sponsored' => 0,
+			'sponsored_plan_id' => 0
+		);
+	}
+
+	protected function _assignValues(&$iaView, array &$entryData)
+	{
+		$iaPlan = $this->_iaCore->factory('plan');
+		$plans = $iaPlan->getPlans($this->getHelper()->getItemName());
+
+		$iaView->assign('categories', $this->getHelper()->getCategoryOptions());
 		$iaView->assign('plans', $plans);
+		$iaView->assign('repeat', $this->getHelper()->getRepeatOptions());
+		$iaView->assign('status', $this->getHelper()->getStatusOptions());
+	}
 
-		if (isset($_POST['save']))
+	protected function _preSaveEntry(array &$entry, array $data, $action)
+	{
+		$title = iaSanitize::html($data['title']);
+
+		if (empty($title))
 		{
-			$messages = array();
+			$this->addMessage('title_is_empty');
+		}
 
-			$title = iaSanitize::html($_POST['title']);
+		$description = iaUtil::safeHTML($data['description']);
 
-			if (empty($title))
+		if (empty($description))
+		{
+			$this->addMessage(iaLanguage::getf('field_is_empty', array('field' => iaLanguage::get('description'))), false);
+		}
+
+		if (!array_key_exists($data['repeat'], $this->getHelper()->getRepeatOptions()))
+		{
+			$messages[] = iaLanguage::get('incorrect_repeat_value');
+		}
+
+		$entry['title'] = $title;
+		$entry['category_id'] = (int)$data['category_id'];
+		$entry['date'] = $data['date'];
+		$entry['date_end'] = $data['date_end'];
+		$entry['description'] = $description;
+		$entry['venue'] = iaSanitize::tags($data['venue']);
+		$entry['repeat'] = $data['repeat'];
+		$entry['status'] = $data['status'];
+		$entry['sponsored'] = (int)$data['sponsored'];
+		$entry['sponsored_plan_id'] = (int)$data['sponsored_plan_id'];
+		$entry['latitude'] = $data['latitude'] ? $data['latitude'] : $entry['latitude'];
+		$entry['longitude'] = $data['longitude'] ? $data['longitude'] : $entry['longitude'];
+
+		if (!empty($data['owner']))
+		{
+			if ($memberId = $this->_iaCore->iaDb->one_bind('id', '`username` = :name OR `fullname` = :name', array('name' => iaSanitize::sql($_POST['owner'])), iaUsers::getTable()))
 			{
-				$messages[] = iaLanguage::get('title_is_empty');
-			}
-
-			$iaUtil = iaCore::util();
-			$description = $iaUtil->safeHTML($_POST['description']);
-
-			if (empty($description))
-			{
-				$messages[] = iaLanguage::get('description_is_empty');
-			}
-
-			if (!array_key_exists($_POST['repeat'], $iaEvent->getRepeatOptions()))
-			{
-				$messages[] = iaLanguage::get('incorrect_repeat_value');
-			}
-
-			if (!array_key_exists($_POST['status'], $iaEvent->getStatusOptions()))
-			{
-				$messages[] = iaLanguage::get('incorrect_status');
-			}
-
-			$item['title'] = $title;
-			$item['category_id'] = (int)$_POST['category_id'];
-			$item['date'] = $_POST['date'];
-			$item['date_end'] = $_POST['date_end'];
-			$item['description'] = $description;
-			$item['venue'] = iaSanitize::tags($_POST['venue']);
-			$item['repeat'] = $_POST['repeat'];
-			$item['status'] = $_POST['status'];
-			$item['sponsored'] = (int)$_POST['sponsored'];
-			$item['sponsored_plan_id'] = (int)$_POST['sponsored_plan_id'];
-			$item['latitude'] = $_POST['latitude'] ? $_POST['latitude'] : $item['latitude'];
-			$item['longitude'] = $_POST['longitude'] ? $_POST['longitude'] : $item['longitude'];
-
-			if ($_POST['member'])
-			{
-				$accountName = iaSanitize::sql($_POST['member']);
-				$accountId = $iaDb->one('`id`', "`username` = '$accountName' OR `fullname` = '$accountName'", iaUsers::getTable());
-
-				if (empty($accountId))
-				{
-					$messages[] = iaLanguage::get('incorrect_owner');
-				}
-				else
-				{
-					$item['member_id'] = $accountId;
-				}
+				$entry['member_id'] = $memberId;
 			}
 			else
 			{
-				$item['member_id'] = iaUsers::getIdentity()->id;
+				$this->addMessage('incorrect_owner_specified');
 			}
-
-			if (isset($_FILES['image']['tmp_name']) && $_FILES['image']['tmp_name'])
-			{
-				$iaPicture = $iaCore->factory('picture');
-
-				$path = iaUtil::getAccountDir();
-				$file = $_FILES['image'];
-				$token = iaUtil::generateToken();
-				$info = array(
-					'image_width' => 1000,
-					'image_height' => 750,
-					'thumb_width' => 250,
-					'thumb_height' => 250,
-					'resize_mode' => iaPicture::CROP
-				);
-
-				if ($image = $iaPicture->processImage($file, $path, $token, $info))
-				{
-					if ($item['image']) // it has an already assigned image
-					{
-						$iaPicture = $iaCore->factory('picture');
-						$iaPicture->delete($item['image']);
-					}
-
-					$item['image'] = $image;
-				}
-			}
-
-			if (empty($messages))
-			{
-				unset($item['member']);
-
-				switch ($pageAction)
-				{
-					case iaCore::ACTION_EDIT:
-						$iaDb->update($item);
-						$iaView->setMessages(iaLanguage::get('event_updated'), iaView::SUCCESS);
-
-						break;
-					case iaCore::ACTION_ADD:
-						$item['id'] = $iaDb->insert($item);
-						$iaView->setMessages(iaLanguage::get('event_added'), iaView::SUCCESS);
-				}
-
-				if (isset($_POST['goto']))
-				{
-					$url = IA_ADMIN_URL . 'events/';
-					$goto = array(
-						'add'	=> $url . 'add/',
-						'list'	=> $url,
-						'stay'	=> $url . 'edit/' . $item['id'] . '/',
-					);
-
-					iaUtil::post_goto($goto);
-				}
-				else
-				{
-					iaUtil::go_to(IA_ADMIN_URL . 'events/edit/' . $item['id'] . '/');
-				}
-			}
-
-			$iaView->setMessages($messages);
+		}
+		else
+		{
+			$entry['member_id'] = iaUsers::getIdentity()->id;
 		}
 
-		$options = array('list' => 'go_to_list', 'add' => 'add_another_one', 'stay' => 'stay_here');
-		$iaView->assign('goto', $options);
+		if ($this->getMessages())
+		{
+			return false;
+		}
 
-		$iaView->assign('categories', $iaEvent->getCategoryOptions());
-		$iaView->assign('repeat', $iaEvent->getRepeatOptions());
-		$iaView->assign('status', $iaEvent->getStatusOptions());
-		$iaView->assign('item', $item);
+		unset($entry['owner']);
 
-		$iaView->display('form-events');
-	}
-	else
-	{
-		$iaView->grid('_IA_URL_plugins/events/js/admin/events');
+		if (isset($_FILES['image']['tmp_name']) && $_FILES['image']['tmp_name'])
+		{
+			$iaPicture = $this->_iaCore->factory('picture');
+
+			$info = array(
+				'image_width' => 1000,
+				'image_height' => 750,
+				'thumb_width' => 250,
+				'thumb_height' => 250,
+				'resize_mode' => iaPicture::CROP
+			);
+
+			if ($image = $iaPicture->processImage($_FILES['image'], iaUtil::getAccountDir(), iaUtil::generateToken(), $info))
+			{
+				empty($entry['image']) || $iaPicture->delete($entry['image']);
+				$entry['image'] = $image;
+			}
+		}
+
+		return true;
 	}
 }
-
-$iaDb->resetTable();

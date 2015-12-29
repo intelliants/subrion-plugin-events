@@ -59,17 +59,16 @@
 
 	<phrases>
 		<phrase category="admin" key="add_category">Add Category</phrase>
+		<phrase category="admin" key="add_event">Add Event</phrase>
 		<phrase category="admin" key="drag_and_drop_marker">You may correct location by dragging the marker</phrase>
 		<phrase category="admin" key="edit_category">Edit Category</phrase>
+		<phrase category="admin" key="edit_event">Edit Event</phrase>
 		<phrase category="admin" key="events_deleted">Events have been successfully removed.</phrase>
-		<phrase category="admin" key="incorrect_owner">Incorrect owner specified for the event.</phrase>
-		<phrase category="admin" key="incorrect_status">Specified status is incorrect.</phrase>
 		<phrase category="admin" key="item_is_not_specified">Item to be edited is not specified.</phrase>
 		<phrase category="admin" key="slug">Slug</phrase>
 
 		<phrase category="common" key="date_end">Event ends</phrase>
 		<phrase category="common" key="date_start">Event starts</phrase>
-		<phrase category="common" key="description_is_empty">Description is empty</phrase>
 		<phrase category="common" key="detailed_description">Detailed description</phrase>
 		<phrase category="common" key="event_added">Event has been successfully added.</phrase>
 		<phrase category="common" key="event_updated">Event data has been successfully updated.</phrase>

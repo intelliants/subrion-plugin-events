@@ -51,7 +51,7 @@
 			</div>
 
 			<div class="row">
-				<label class="col col-lg-2 control-label" for="input-language">{lang key='detailed_description'} <span class="text-danger">*</span></label>
+				<label class="col col-lg-2 control-label" for="input-description">{lang key='detailed_description'} <span class="text-danger">*</span></label>
 				<div class="col col-lg-8">
 					{ia_wysiwyg name='description' value=$item.description}
 				</div>
@@ -66,7 +66,7 @@
 								{printImage imgfile=$item.image}
 							</a>
 							<div class="caption">
-								<a class="btn btn-small btn-danger" href="javascript:void(0);" title="{lang key='delete'}" onclick="return intelli.admin.removeFile('{$item.image}',this,'events','image','{$item.id}')"><span class="i-remove-sign"></span></a>
+								<a class="btn btn-small btn-danger" href="javascript:void(0);" title="{lang key='delete'}" onclick="return intelli.admin.removeFile('{$item.image}',this,'events','image','{$id}')"><span class="i-remove-sign"></span></a>
 							</div>
 						</div>
 					{/if}

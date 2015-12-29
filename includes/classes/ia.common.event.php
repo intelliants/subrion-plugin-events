@@ -136,7 +136,21 @@ class iaEvent extends abstractCore
 
 	public function getCategories()
 	{
-		return $this->iaDb->all(iaDb::ALL_COLUMNS_SELECTION, iaDb::convertIds(iaCore::STATUS_ACTIVE, 'status'), null, null, $this->getCategoriesTable());
+		$sql = 'SELECT c.*, COUNT(e.`id`) `num` '
+			. 'FROM `:prefix:table_categories` c '
+			. "LEFT JOIN `:prefix:table_events` e ON (e.`category_id` = c.`id` AND e.`status` = ':status') "
+			. "WHERE c.`status` = ':status' "
+			. 'GROUP BY c.`id` '
+			. 'ORDER BY c.`title`';
+
+		$sql = iaDb::printf($sql, array(
+			'prefix' => $this->iaDb->prefix,
+			'table_categories' => self::getCategoriesTable(),
+			'table_events' => self::getTable(),
+			'status' => iaCore::STATUS_ACTIVE
+		));
+
+		return $this->iaDb->getAll($sql);
 	}
 
 	public function getDateFormat()

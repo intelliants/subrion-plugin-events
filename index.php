@@ -107,6 +107,7 @@ if (iaView::REQUEST_HTML == $iaView->getRequestType())
 				iaBreadcrumb::add(iaLanguage::get('events'), IA_URL . 'events/');
 				iaBreadcrumb::replaceEnd($category['title'], IA_SELF);
 
+				$iaView->set('events_category_id', $category['id']);
 				$iaView->title($category['title']);
 
 				$events = $iaEvent->get(array('category_id' => $category['id']), $start, $limit);

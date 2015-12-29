@@ -73,7 +73,7 @@ if (isset($_POST['create']))
 
 	if (empty($item['description']))
 	{
-		$messages[] = iaLanguage::get('description_is_empty');
+		$messages[] = iaLanguage::getf('field_is_empty', array('field' => iaLanguage::get('description')));
 	}
 
 	if (!array_key_exists($_POST['repeat'], $iaEvent->getRepeatOptions()))
