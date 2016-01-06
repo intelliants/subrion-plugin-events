@@ -75,7 +75,6 @@
 		<phrase category="common" key="incorrect_repeat_value">Repeat type is incorrect.</phrase>
 		<phrase category="common" key="monthly">monthly</phrase>
 		<phrase category="common" key="once">once</phrase>
-		<phrase category="common" key="recurring">recurring</phrase>
 		<phrase category="common" key="repeat">Repeat</phrase>
 		<phrase category="common" key="venue">Venue</phrase>
 		<phrase category="common" key="yearly">yearly</phrase>
@@ -95,18 +94,6 @@
 		<phrase category="frontend" key="find_event">Find Event</phrase>
 		<phrase category="frontend" key="invalid_date_specified">Invalid date specified.</phrase>
 		<phrase category="frontend" key="listings_found">Events found</phrase>
-		<phrase category="frontend" key="month1">January</phrase>
-		<phrase category="frontend" key="month2">February</phrase>
-		<phrase category="frontend" key="month3">March</phrase>
-		<phrase category="frontend" key="month4">April</phrase>
-		<phrase category="frontend" key="month5">May</phrase>
-		<phrase category="frontend" key="month6">June</phrase>
-		<phrase category="frontend" key="month7">July</phrase>
-		<phrase category="frontend" key="month8">August</phrase>
-		<phrase category="frontend" key="month9">September</phrase>
-		<phrase category="frontend" key="month10">October</phrase>
-		<phrase category="frontend" key="month11">November</phrase>
-		<phrase category="frontend" key="month12">December</phrase>
 		<phrase category="frontend" key="no_events">No events to show.</phrase>
 		<phrase category="frontend" key="no_events_for_day">No events on this day.</phrase>
 		<phrase category="frontend" key="no_search_term_provided">Nothing to search</phrase>
