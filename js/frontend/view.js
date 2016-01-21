@@ -45,4 +45,10 @@ $(function(){
 	{
 		loadScript('http://maps.googleapis.com/maps/api/js?callback=mapInitialize');
 	}
+
+	$('.js-delete-event').on('click', function(e){
+		e.preventDefault();
+
+		intelli.confirm(_t('event_delete_confirmation'), { url: $(this).attr('href') });
+	});
 });

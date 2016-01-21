@@ -85,6 +85,7 @@
 		<phrase category="frontend" key="all_events_on_the_day">All events on this day</phrase>
 		<phrase category="frontend" key="closest_events">Closest Events</phrase>
 		<phrase category="frontend" key="empty">empty</phrase>
+		<phrase category="frontend" key="events_submission_is_not_allowed_for_guests">Events submission is not allowed for guests. You have to &lt;a href=":base_urllogin/"&gt;sign in&lt;/a&gt; or &lt;a href=":base_urlregistration/"&gt;register&lt;/a&gt; in order to place your event.</phrase>
 		<phrase category="frontend" key="event_delete_confirmation">Are you sure want to delete event?</phrase>
 		<phrase category="frontend" key="event_deleted">Event has been successfully removed</phrase>
 		<phrase category="frontend" key="event_details">Details</phrase>

@@ -59,6 +59,11 @@ if ('event_edit' == $iaView->name())
 }
 else
 {
+	if (!iaUsers::hasIdentity())
+	{
+		return iaView::accessDenied(iaLanguage::getf('events_submission_is_not_allowed_for_guests', array('base_url' => IA_URL)));
+	}
+
 	$iaPlan = $iaCore->factory('plan');
 	$iaView->assign('plans', $iaPlan->getPlans($iaEvent->getItemName()));
 

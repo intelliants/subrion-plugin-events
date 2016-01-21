@@ -65,7 +65,7 @@ if ($iaView->getRequestType() == iaView::REQUEST_HTML)
 		$pageActions[] = array('icon' => 'icon-remove',
 			'title' => iaLanguage::get('delete'),
 			'url' => IA_URL . 'events/delete/' . $item['id'] . '/',
-			'classes' => 'btn-danger'
+			'classes' => 'btn-danger js-delete-event'
 		);
 
 		$iaView->set('actions', $pageActions);
