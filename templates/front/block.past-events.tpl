@@ -1,4 +1,4 @@
-{if $events.past}
+{if isset($events.past) && $events.past}
 	<div class="media-items events-list">
 		{foreach from=$events.past item=event}
 			<div class="media">

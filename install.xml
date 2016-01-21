@@ -4,8 +4,8 @@
 	<summary>List of your events. Displays calendar of events in a separate box.</summary>
 	<author>Intelliants LLC</author>
 	<contributor>Intelliants LLC</contributor>
-	<version>4.0.0</version>
-	<date>2016-01-04</date>
+	<version>4.0.1</version>
+	<date>2016-01-21</date>
 	<compatibility>4.0</compatibility>
 
 	<packageitems>
@@ -29,6 +29,7 @@
 	<config group="events" name="events_week_start" values="Sunday,Monday" type="select" description="The day week starts by">Sunday</config>
 	<config group="events" name="events_auto_approval" values="0,1" type="radio" description="Events Auto Approval">0</config>
 	<config group="events" name="events_ajax_popup" values="0,1" type="radio" description="Enable popup in Calendar">1</config>
+	<config group="events" name="events_show_past_events" values="0,1" type="radio" description="Show Past events">1</config>
 	<config group="events" name="events_number_default" type="text" description="Number of events per page">10</config>
 	<config group="events" name="events_number_future" type="text" description="Number of events in Future Events block">10</config>
 	<config group="events" name="events_number_past" type="text" description="Number of events in Past Events block">5</config>

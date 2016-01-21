@@ -59,6 +59,11 @@ class iaEvent extends abstractCore
 			$where .= ' AND ' . $additional;
 		}
 
+		if (!$this->iaCore->get('events_show_past_events'))
+		{
+			$where .= " AND `date_end` > DATE_ADD(NOW(), INTERVAL 1 MINUTE)";
+		}
+
 		$sql = "
 			SELECT SQL_CALC_FOUND_ROWS
 				t1.*,
@@ -159,12 +164,20 @@ class iaEvent extends abstractCore
 
 	public function getCategories()
 	{
-		$sql = 'SELECT c.*, COUNT(e.`id`) `num` '
-			. 'FROM `:prefix:table_categories` c '
-			. "LEFT JOIN `:prefix:table_events` e ON (e.`category_id` = c.`id` AND e.`status` = ':status') "
-			. "WHERE c.`status` = ':status' "
-			. 'GROUP BY c.`id` '
-			. 'ORDER BY c.`title`';
+		$sql = 'SELECT c.*, COUNT(e.`id`) `num` ';
+		$sql .= 'FROM `:prefix:table_categories` c ';
+		$sql .= "LEFT JOIN `:prefix:table_events` e ON ";
+		if (!$this->iaCore->get('events_show_past_events'))
+		{
+			$sql .= "(e.`category_id` = c.`id` AND e.`status` = ':status' AND e.`date_end` > DATE_ADD(NOW(), INTERVAL 1 MINUTE)) ";
+		}
+		else
+		{
+			$sql .= "(e.`category_id` = c.`id` AND e.`status` = ':status') ";
+		}
+		$sql .= "WHERE c.`status` = ':status' ";
+		$sql .= 'GROUP BY c.`id` ';
+		$sql .= 'ORDER BY c.`title`';
 
 		$sql = iaDb::printf($sql, array(
 			'prefix' => $this->iaDb->prefix,

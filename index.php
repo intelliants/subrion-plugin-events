@@ -175,6 +175,8 @@ if (iaView::REQUEST_HTML == $iaView->getRequestType())
 	}
 	else
 	{
+		// $stmt = $iaCore->get('events_show_past_events') ? false : "`date_end` > DATE_ADD(NOW(), INTERVAL 1 MINUTE)";
+
 		$events = $iaEvent->get(array(), $start, $limit, false, false);
 	}
 
