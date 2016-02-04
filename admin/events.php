@@ -114,6 +114,10 @@ class iaBackendController extends iaAbstractControllerPluginBackend
 	{
 		$iaPlan = $this->_iaCore->factory('plan');
 		$plans = $iaPlan->getPlans($this->getHelper()->getItemName());
+		$iaUsers = $this->_iaCore->factory('users');
+		$owner = empty($entryData['member_id']) ? iaUsers::getIdentity(true) : $iaUsers->getInfo($entryData['member_id']);
+
+		$entryData['owner'] = $owner['fullname'] . " ({$owner['email']})";
 
 		$iaView->assign('categories', $this->getHelper()->getCategoryOptions());
 		$iaView->assign('plans', $plans);
@@ -154,22 +158,7 @@ class iaBackendController extends iaAbstractControllerPluginBackend
 		$entry['sponsored_plan_id'] = (int)$data['sponsored_plan_id'];
 		$entry['latitude'] = $data['latitude'] ? $data['latitude'] : $entry['latitude'];
 		$entry['longitude'] = $data['longitude'] ? $data['longitude'] : $entry['longitude'];
-
-		if (!empty($data['owner']))
-		{
-			if ($memberId = $this->_iaCore->iaDb->one_bind('id', '`username` = :name OR `fullname` = :name', array('name' => iaSanitize::sql($_POST['owner'])), iaUsers::getTable()))
-			{
-				$entry['member_id'] = $memberId;
-			}
-			else
-			{
-				$this->addMessage('incorrect_owner_specified');
-			}
-		}
-		else
-		{
-			$entry['member_id'] = iaUsers::getIdentity()->id;
-		}
+		$entry['member_id'] = $data['member_id'];
 
 		if ($this->getMessages())
 		{
