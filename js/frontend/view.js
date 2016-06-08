@@ -1,7 +1,7 @@
 function mapInitialize ()
 {
-	var lat = parseFloat($('input[name="latitude"').val()),
-		lng = parseFloat($('input[name="longitude"').val()),
+	var lat = parseFloat($('input[name="latitude"]').val()),
+		lng = parseFloat($('input[name="longitude"]').val()),
 		latLng = {lat: lat, lng: lng},
 		fullAddress = $('#event-venue').val();
 
