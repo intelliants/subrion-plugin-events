@@ -43,7 +43,7 @@ $(function(){
 	}
 	else
 	{
-		loadScript('http://maps.googleapis.com/maps/api/js?callback=mapInitialize');
+		loadScript('http://maps.googleapis.com/maps/api/js?callback=mapInitialize&key=' + intelli.config.events_gmap_key);
 	}
 
 	$('.js-delete-event').on('click', function(e){
