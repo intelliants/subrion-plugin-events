@@ -1,11 +1,11 @@
 <form method="post" enctype="multipart/form-data" class="ia-form add-event">
 	{preventCsrf}
 
-	{include file='plans.tpl' item=$item}
+	{include 'plans.tpl' item=$item}
 
 	<div class="form-group">
 		<label>{lang key='title'}: <span class="required-label">*</span>
-			<input class="form-control" type="text" name="title" value="{$item.title}" size="50" maxlength="255">
+			<input class="form-control" type="text" name="title" value="{$item.title|escape:'html'}" size="50" maxlength="255">
 		</label>
 	</div>
 	<div class="form-group">
@@ -36,7 +36,7 @@
 	</div>
 	<div class="form-group">
 		<label>{lang key='venue'}:
-			<input class="form-control" type="text" name="venue" value="{$item.venue}" size="50" maxlength="255">
+			<input class="form-control" type="text" name="venue" value="{$item.venue|escape:'html'}" size="50" maxlength="255">
 		</label>
 	</div>
 	<div class="form-group">
@@ -73,11 +73,11 @@
 		</div>
 	</div>
 
-	{include file='captcha.tpl'}
+	{include 'captcha.tpl'}
 
 	<div class="form-actions">
 		{if isset($item.id)}
-			<input type="hidden" name="id" value="{$item.id}">
+			<input type="hidden" name="id" value="{$item.id|intval}">
 		{/if}
 		<input type="submit" value="{lang key='save'}" name="create" class="btn btn-primary">
 	</div>

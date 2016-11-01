@@ -1,13 +1,12 @@
 {if $events.past}
 	<div class="media-items events-list">
-		{foreach from=$events.past item=event}
+		{foreach $events.past as $event}
 			<div class="media">
 				{if $event.image}
 					<a href="{$event.url}" class="media-object pull-left">{printImage imgfile=$event.image width=60 height=60 class='img-rounded img-responsive'}</a>
 				{/if}
-
 				<div class="media-body">
-					<h5 class="media-heading"><a href="{$event.url}">{$event.title}</a></h5>
+					<h5 class="media-heading"><a href="{$event.url}">{$event.title|escape:'html'}</a></h5>
 					<span class="fa fa-clock-o"></span> 
 					{if $event.date|date_format:$core.config.date_format == $event.date_end|date_format:$core.config.date_format}
 						{$event.date|date_format:$core.config.date_format}

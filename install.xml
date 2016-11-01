@@ -116,13 +116,13 @@
 	</phrases>
 
 	<hooks>
-		<hook name="phpCoreBeforePageDisplay" type="php" page_type="front">
+		<hook name="phpCoreBeforePageDisplay" page_type="front">
 		<![CDATA[
 if (iaView::REQUEST_HTML == $iaView->getRequestType())
 {
 	$events = array();
 
-	$iaEvent = $iaCore->factoryPlugin('events', 'common', 'event');
+	$iaEvent = $iaCore->factoryPlugin('events');
 
 	if ($iaView->blockExists('future_events'))
 	{

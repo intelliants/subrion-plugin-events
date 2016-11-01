@@ -14,7 +14,7 @@
 
 				<div class="media-body">
 					<h4 class="media-heading">
-						<a href="{$event.url}">{$event.title}</a>
+						<a href="{$event.url}">{$event.title|escape:'html'}</a>
 					</h4>
 					<div class="media-date">
 						{if $event.date_end|strtotime > $smarty.server.REQUEST_TIME}
@@ -22,7 +22,7 @@
 						{else}
 							<span class="fa fa-clock-o"></span> {$event.date} - {$event.date_end}
 						{/if}
-						{if $event.venue}, <br><span class="fa fa-map-marker"></span> {$event.venue}{/if}
+						{if $event.venue}, <br><span class="fa fa-map-marker"></span> {$event.venue|escape:'html'}{/if}
 					</div>
 
 					{$event.description|strip_tags|truncate:300:"..."}

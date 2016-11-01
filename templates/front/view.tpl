@@ -20,8 +20,8 @@
 			<div class="ia-wrap">
 				<p><span class="fa fa-clock-o"></span> {$item.date} - {$item.date_end}</p>
 				{if $item.venue}
-					<p><span class="fa fa-map-marker"></span> {$item.venue}</p>
-					<input type="hidden" id="event-venue" value="{$item.venue}">
+					<p><span class="fa fa-map-marker"></span> {$item.venue|escape:'html'}</p>
+					<input type="hidden" id="event-venue" value="{$item.venue|escape:'html'}">
 					<input type="hidden" name="longitude" value="{if isset($item.longitude)}{$item.longitude}{/if}">
 					<input type="hidden" name="latitude" value="{if isset($item.latitude)}{$item.latitude}{/if}">
 

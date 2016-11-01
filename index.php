@@ -1,10 +1,8 @@
 <?php
 //##copyright##
 
-$iaDb->setTable('events');
-
 $iaUtil = iaCore::util();
-$iaEvent = $iaCore->factoryPlugin(IA_CURRENT_PLUGIN, 'common', 'event');
+$iaEvent = $iaCore->factoryPlugin(IA_CURRENT_PLUGIN);
 
 if (iaView::REQUEST_JSON == $iaView->getRequestType())
 {
@@ -26,8 +24,6 @@ if (iaView::REQUEST_JSON == $iaView->getRequestType())
 
 if (iaView::REQUEST_HTML == $iaView->getRequestType())
 {
-	$iaView->title(iaLanguage::get('page_title_events'));
-
 	$limit = $iaCore->get('events_number_default', 10);
 	$page = max(1, isset($_GET['page']) && is_numeric($_GET['page']) ? (int)$_GET['page'] : 0);
 	$start = ($page - 1) * $limit;
@@ -98,8 +94,7 @@ if (iaView::REQUEST_HTML == $iaView->getRequestType())
 				iaBreadcrumb::add(iaLanguage::get('events'), IA_URL . 'events/');
 				iaBreadcrumb::replaceEnd($title, IA_SELF);
 
-				$title = iaDb::printf(iaLanguage::get('events_on_date'), array('date' => $title));
-				$iaView->title($title);
+				$iaView->title(iaLanguage::getf('events_on_date', array('date' => $title)));
 
 				break;
 
@@ -152,7 +147,7 @@ if (iaView::REQUEST_HTML == $iaView->getRequestType())
 	}
 	else
 	{
-		$events = $iaEvent->get(array(), $start, $limit, false, false);
+		$events = $iaEvent->get(null, $start, $limit, false, false);
 	}
 
 	$paginator['total'] = $iaDb->foundRows();
@@ -164,5 +159,3 @@ if (iaView::REQUEST_HTML == $iaView->getRequestType())
 
 	$iaView->display('index');
 }
-
-$iaDb->resetTable();

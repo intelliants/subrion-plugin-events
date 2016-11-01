@@ -9,7 +9,7 @@
 			<div class="row">
 				<label class="col col-lg-2 control-label" for="input-language">{lang key='title'} <span class="text-danger">*</span></label>
 				<div class="col col-lg-4">
-					<input type="text" name="title" value="{$item.title}" maxlength="255">
+					<input type="text" name="title" value="{$item.title|escape:'html'}" maxlength="255">
 				</div>
 			</div>
 
@@ -70,7 +70,6 @@
 							</div>
 						</div>
 					{/if}
-
 					{ia_html_file name='image' id='input-image'}
 				</div>
 			</div>
@@ -78,7 +77,7 @@
 			<div class="row">
 				<label class="col col-lg-2 control-label" for="input-language">{lang key='venue'}</label>
 				<div class="col col-lg-4">
-					<input id="venue" type="text" name="venue" class="common" value="{$item.venue}" maxlength="255">
+					<input id="venue" type="text" name="venue" class="common" value="{$item.venue|escape:'html'}" maxlength="255">
 				</div>
 			</div>
 
@@ -94,9 +93,8 @@
 			</div>
 	</div>
 
-	{include file='fields-system.tpl'}
+	{include 'fields-system.tpl'}
 </form>
-
 {ia_add_media files='datepicker'}
 {ia_print_css files='_IA_URL_plugins/events/templates/front/css/style'}
 {ia_print_js files='_IA_URL_plugins/events/js/admin/manage' order='3'}

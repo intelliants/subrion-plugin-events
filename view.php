@@ -11,7 +11,7 @@ if ($iaView->getRequestType() == iaView::REQUEST_HTML)
 		return iaView::errorPage(iaView::ERROR_NOT_FOUND, iaLanguage::get('event_not_found'));
 	}
 
-	$iaEvent = $iaCore->factoryPlugin(IA_CURRENT_PLUGIN, 'common', 'event');
+	$iaEvent = $iaCore->factoryPlugin(IA_CURRENT_PLUGIN);
 
 	$item = $iaEvent->get(array('id' => $eventId), 0, 1);
 
@@ -24,11 +24,7 @@ if ($iaView->getRequestType() == iaView::REQUEST_HTML)
 
 	iaBreadcrumb::add(iaLanguage::get('events'), IA_URL . 'events/');
 
-	$eventOwner = false;
-	if ($item['member_id'])
-	{
-		$eventOwner = $iaCore->factory('users')->getInfo($item['member_id']);
-	}
+	$eventOwner = empty($item['member_id']) ? false : $iaCore->factory('users')->getInfo($item['member_id']);
 	$iaView->assign('eventOwner', $eventOwner);
 
 	if (iaUsers::hasIdentity() && $item['member_id'] == iaUsers::getIdentity()->id)

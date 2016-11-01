@@ -5,6 +5,8 @@ class iaBackendController extends iaAbstractControllerPluginBackend
 {
 	protected $_name = 'events';
 
+	protected $_itemName = 'events';
+
 	protected $_gridColumns = array('title', 'member_id', 'date', 'date_end', 'status');
 	protected $_gridFilters = array('status' => self::EQUAL);
 	protected $_gridQueryMainTableAlias = 'e';
@@ -13,12 +15,13 @@ class iaBackendController extends iaAbstractControllerPluginBackend
 	protected $_phraseEditSuccess = 'event_updated';
 	protected $_phraseGridEntriesDeleted = 'events_deleted';
 
+	protected $_repeatOptions = array('none', 'monthly', 'yearly');
+	protected $_statuses = array(iaCore::STATUS_ACTIVE, iaCore::STATUS_INACTIVE);
+
 
 	public function init()
 	{
 		$this->_template = 'form-' . $this->getName();
-		
-		$this->setHelper($this->_iaCore->factoryPlugin($this->getPluginName(), 'common', 'event'));
 	}
 
 	protected function _modifyGridParams(&$conditions, &$values, array $params)
@@ -33,13 +36,14 @@ class iaBackendController extends iaAbstractControllerPluginBackend
 	protected function _gridQuery($columns, $where, $order, $start, $limit)
 	{
 		$sql =
-			'SELECT SQL_CALC_FOUND_ROWS :columns, '
+			'SELECT :columns, '
 				. 'IF(m.`fullname` != "", m.`fullname`, m.`username`) `owner`, '
 				. '1 `update`, 1 `delete` '
 			.'FROM `:prefix:table_events` e '
 			.'LEFT JOIN `:prefix:table_members` m ON (m.`id` = e.`member_id`) '
 			. ($where ? 'WHERE ' . $where . ' ' : '') . $order . ' '
 			. 'LIMIT :start, :limit';
+
 		$sql = iaDb::printf($sql, array(
 			'columns' => $columns,
 			'prefix' => $this->_iaDb->prefix,
@@ -79,7 +83,7 @@ class iaBackendController extends iaAbstractControllerPluginBackend
 			'longitude' => '',
 			'description' => '',
 			'image' => '',
-			'repeat' => 'none',
+			'repeat' => $this->_repeatOptions[0],
 			'status' => iaCore::STATUS_ACTIVE,
 			'member_id' => iaUsers::getIdentity()->id,
 			'sponsored' => 0,
@@ -90,12 +94,21 @@ class iaBackendController extends iaAbstractControllerPluginBackend
 	protected function _assignValues(&$iaView, array &$entryData)
 	{
 		$iaPlan = $this->_iaCore->factory('plan');
-		$plans = $iaPlan->getPlans($this->getHelper()->getItemName());
 
-		$iaView->assign('categories', $this->getHelper()->getCategoryOptions());
+		$plans = $iaPlan->getPlans($this->_itemName);
+
+		$categories = $this->_iaDb->keyvalue(array('id', 'title'), null, 'events_categories');
+
+		$repeatOptions = array();
+		foreach ($this->_repeatOptions as $option)
+		{
+			$repeatOptions[$option] = iaLanguage::get($option);
+		}
+
+		$iaView->assign('categories', $categories);
 		$iaView->assign('plans', $plans);
-		$iaView->assign('repeat', $this->getHelper()->getRepeatOptions());
-		$iaView->assign('status', $this->getHelper()->getStatusOptions());
+		$iaView->assign('repeat', $repeatOptions);
+		$iaView->assign('status', $this->_statuses);
 	}
 
 	protected function _preSaveEntry(array &$entry, array $data, $action)
@@ -114,7 +127,7 @@ class iaBackendController extends iaAbstractControllerPluginBackend
 			$this->addMessage(iaLanguage::getf('field_is_empty', array('field' => iaLanguage::get('description'))), false);
 		}
 
-		if (!array_key_exists($data['repeat'], $this->getHelper()->getRepeatOptions()))
+		if (!in_array($data['repeat'], $this->_repeatOptions))
 		{
 			$messages[] = iaLanguage::get('incorrect_repeat_value');
 		}

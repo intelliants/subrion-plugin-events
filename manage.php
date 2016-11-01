@@ -1,14 +1,14 @@
 <?php
 //##copyright##
 
-$iaEvent = $iaCore->factoryPlugin(IA_CURRENT_PLUGIN, 'common', 'event');
-
 if ($iaView->getRequestType() != iaView::REQUEST_HTML)
 {
 	return;
 }
 
-$iaDb->setTable('events');
+$iaEvent = $iaCore->factoryPlugin(IA_CURRENT_PLUGIN);
+
+$iaDb->setTable($iaEvent::getTable());
 
 iaBreadcrumb::add(iaLanguage::get('events'), IA_URL . 'events/');
 
@@ -16,8 +16,7 @@ if ('event_edit' == $iaView->name())
 {
 	if (isset($iaCore->requestPath[0]) && is_numeric($iaCore->requestPath[0]))
 	{
-		$stmt = sprintf('`id` = %d', $iaCore->requestPath[0]);
-		$item = $iaDb->row('*', $stmt);
+		$item = $iaDb->row(iaDb::ALL_COLUMNS_SELECTION, iaDb::convertIds($iaCore->requestPath[0]));
 
 		$item['date'] = substr($item['date'], 0, -3);
 		$item['date_end'] = substr($item['date_end'], 0, -3);

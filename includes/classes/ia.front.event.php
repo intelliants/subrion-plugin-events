@@ -19,49 +19,40 @@ class iaEvent extends abstractCore
 		return $this->_categoriesTable;
 	}
 
-	protected function _get($conditions = array(), $additional = false, $start, $limit, $defaultSorting = true)
+	protected function _get($conditions = array(), $additionalConditions = null, $start, $limit, $defaultSorting = true)
 	{
-		$where = (string)'';
+		$where = iaDb::EMPTY_CONDITION;
 		if ($conditions)
 		{
-			$where = 'WHERE 1';
 			foreach ($conditions as $column => $value)
-			{
-				$where .= " AND t1.`$column` = '$value'";
-			}
+				$where.= " AND e.`$column` = '" . iaSanitize::sql($value) . "'";
 		}
 
-		if ($additional)
-		{
-			$where .= ' AND ' . $additional;
-		}
+		empty($additionalConditions) || $where.= ' AND ' . $additionalConditions;
 
-		$sql = "
-			SELECT SQL_CALC_FOUND_ROWS
-				t1.*,
-				DATE_FORMAT(t1.`date`, ':format') `date`,
-				DATE_FORMAT(t1.`date_end`, ':format') `date_end`,
-				t2.`username` `owner`,
-				t2.`fullname` `owner_fullname`
-			FROM `:table` t1
-			LEFT JOIN `:memberstable` t2 ON (t2.`id` = t1.`member_id`)
-			{$where}
-			ORDER BY t1.`date` :direction
-			LIMIT :start, :limit";
+		$sql =
+			'SELECT SQL_CALC_FOUND_ROWS '
+				. 'e.*, '
+				. 'DATE_FORMAT(e.`date`, ":format") `date`, DATE_FORMAT(e.`date_end`, ":format") `date_end`, '
+				. 'm.`username` `owner`, m.`fullname` `owner_fullname` '
+			. 'FROM `:table_events` e '
+			. 'LEFT JOIN `:table_members` m ON (m.`id` = e.`member_id`) '
+			. 'WHERE :where '
+			. 'GROUP BY e.`id` '
+			. 'ORDER BY e.`date` :direction '
+			. 'LIMIT :start, :limit';
 
-		$dtFormat = $this->iaCore->get('date_format') . ' %H:%i';
 		$sql = iaDb::printf($sql, array(
-			'format' => $dtFormat,
-			'table' => self::getTable(true),
-			'memberstable' => iaUsers::getTable(true),
+			'table_events' => self::getTable(true),
+			'table_members' => iaUsers::getTable(true),
+			'format' => $this->iaCore->get('date_format') . ' %H:%i',
+			'where' => $where,
 			'direction' => $defaultSorting ? iaDb::ORDER_ASC : iaDb::ORDER_DESC,
 			'start' => (int)$start,
-			'limit' => (int)$limit)
-		);
+			'limit' => (int)$limit
+		));
 
-		$result = $this->iaDb->getAll($sql);
-
-		return $result ? $this->_processValues($result) : false;
+		return $this->_processValues($this->iaDb->getAll($sql));
 	}
 
 	public function getItemName()
@@ -79,32 +70,36 @@ class iaEvent extends abstractCore
 		}
 
 		iaCore::util();
-
 		iaUtil::loadUTF8Functions('ascii', 'validation', 'bad', 'utf8_to_ascii');
 
-		if (!utf8_is_ascii($alias))
-		{
-			$alias = utf8_to_ascii($alias);
-		}
+		utf8_is_ascii($alias) || $alias = utf8_to_ascii($alias);
 
 		$alias = iaSanitize::alias($alias);
 
 		return iaDb::printf(':urlevent/:title-:id.html', array('url' => IA_URL, 'title' => $alias, 'id' => $eventData['id']));
 	}
 
+	public function coreSearch($query, $start, $limit)
+	{
+		$where = '(e.`title` LIKE :query OR e.`description` LIKE :query OR e.`venue` LIKE :query)';
+		$this->iaDb->bind($where, array('query' => '%' . iaSanitize::sql($query) . '%'));
+
+		$rows = $this->get(null, $start, $limit, $where);
+
+		return array($this->iaDb->foundRows(), $rows);
+	}
 
 	protected function _processValues($entries)
 	{
-		$result = $entries;
-		if (is_array($result) && $result)
+		if (is_array($entries))
 		{
-			foreach ($result as $key => $event)
+			foreach ($entries as &$entry)
 			{
-				$result[$key]['url'] = $this->url($event);
+				$entry['url'] = $this->url($entry);
 			}
 		}
 
-		return $result;
+		return $entries;
 	}
 
 	public function getRepeatOptions()

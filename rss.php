@@ -3,7 +3,7 @@
 
 $limit = $iaCore->get('events_number_rss', 10);
 
-$iaEvent = $iaCore->factoryPlugin(IA_CURRENT_PLUGIN, 'common', 'event');
+$iaEvent = $iaCore->factoryPlugin(IA_CURRENT_PLUGIN);
 $events = $iaEvent->get(array(), 0, $limit);
 
 if ($events)
