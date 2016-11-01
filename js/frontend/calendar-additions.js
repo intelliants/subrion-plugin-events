@@ -4,17 +4,20 @@ $(function() {
 	$('#event-calendar').datepicker({format: 'yyyy-mm-dd', autoclose: true, todayBtn: false, startView: 2, pickerPosition: 'top-left', minView: 2, maxView: 4}).on('changeDate', function(e) {
 		active_offset = $('td.day.active', this).offset();
 
+		var date = $('#event-calendar').datepicker('getDate')
+		var formattedDate = date.getFullYear() + "-" + ("0" + (date.getMonth() + 1)).slice(-2) + "-" + date.getDate();
+
 		$('#event-popup').show();
 		$('#event-popup').offset({ top: active_offset.top, left: active_offset.left + 37 });
 		$('#event-popup .progress').show();
 		$('#event-popup .ia-items').remove();
 		$('#event-popup #view-all-events').hide();
-		$('#event-popup #view-all-events').attr('href', intelli.config.baseurl + 'events/date/' + $('#event-calendar').data('date').replace(/-/g, '/') + '/');
+		$('#event-popup #view-all-events').attr('href', intelli.config.baseurl + 'events/date/' + formattedDate.replace(/-/g, '/') + '/');
 
 		vUrl = intelli.config.baseurl + 'events/read.json';
 		options = {
 			action: 'get_by_date',
-			date: $('#event-calendar').data('date')
+			date: formattedDate
 		};
 
 		$.get(vUrl, options, function(data) {

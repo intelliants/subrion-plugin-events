@@ -1,5 +1,28 @@
 <?php
-//##copyright##
+/******************************************************************************
+ *
+ * Subrion - open source content management system
+ * Copyright (C) 2016 Intelliants, LLC <http://www.intelliants.com>
+ *
+ * This file is part of Subrion.
+ *
+ * Subrion is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * Subrion is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with Subrion. If not, see <http://www.gnu.org/licenses/>.
+ *
+ *
+ * @link http://www.subrion.org/
+ *
+ ******************************************************************************/
 
 class iaEvent extends abstractCore
 {
@@ -29,6 +52,11 @@ class iaEvent extends abstractCore
 		}
 
 		empty($additionalConditions) || $where.= ' AND ' . $additionalConditions;
+
+		if (!$this->iaCore->get('events_show_past_events'))
+		{
+			$where.= " AND e.`date_end` > DATE_ADD(NOW(), INTERVAL 1 MINUTE)";
+		}
 
 		$sql =
 			'SELECT SQL_CALC_FOUND_ROWS '
@@ -131,12 +159,15 @@ class iaEvent extends abstractCore
 
 	public function getCategories()
 	{
-		$sql = 'SELECT c.*, COUNT(e.`id`) `num` '
-			. 'FROM `:prefix:table_categories` c '
-			. "LEFT JOIN `:prefix:table_events` e ON (e.`category_id` = c.`id` AND e.`status` = ':status') "
-			. "WHERE c.`status` = ':status' "
-			. 'GROUP BY c.`id` '
-			. 'ORDER BY c.`title`';
+		$sql = 'SELECT c.*, COUNT(e.`id`) `num` ';
+		$sql .= 'FROM `:prefix:table_categories` c ';
+		$sql .= "LEFT JOIN `:prefix:table_events` e ON ";
+		$sql .= $this->iaCore->get('events_show_past_events')
+			? "(e.`category_id` = c.`id` AND e.`status` = ':status') "
+			: "(e.`category_id` = c.`id` AND e.`status` = ':status' AND e.`date_end` > DATE_ADD(NOW(), INTERVAL 1 MINUTE)) ";
+		$sql .= "WHERE c.`status` = ':status' ";
+		$sql .= 'GROUP BY c.`id` ';
+		$sql .= 'ORDER BY c.`title`';
 
 		$sql = iaDb::printf($sql, array(
 			'prefix' => $this->iaDb->prefix,

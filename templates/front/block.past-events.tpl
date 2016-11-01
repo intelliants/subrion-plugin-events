@@ -1,9 +1,11 @@
-{if $events.past}
+{if isset($events.past) && $events.past}
 	<div class="media-items events-list">
 		{foreach $events.past as $event}
 			<div class="media">
 				{if $event.image}
 					<a href="{$event.url}" class="media-object pull-left">{printImage imgfile=$event.image width=60 height=60 class='img-rounded img-responsive'}</a>
+				{else}
+					<a href="{$event.url}" class="media-object pull-left"><img src="{$smarty.const.IA_CLEAR_URL}plugins/events/templates/front/img/preview-image.png" alt="{$event.title}" width="60" height="60" class="img-rounded img-responsive"></a>
 				{/if}
 				<div class="media-body">
 					<h5 class="media-heading"><a href="{$event.url}">{$event.title|escape:'html'}</a></h5>

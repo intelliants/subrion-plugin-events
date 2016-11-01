@@ -1,5 +1,28 @@
 <?php
-//##copyright##
+/******************************************************************************
+ *
+ * Subrion - open source content management system
+ * Copyright (C) 2016 Intelliants, LLC <http://www.intelliants.com>
+ *
+ * This file is part of Subrion.
+ *
+ * Subrion is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * Subrion is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with Subrion. If not, see <http://www.gnu.org/licenses/>.
+ *
+ *
+ * @link http://www.subrion.org/
+ *
+ ******************************************************************************/
 
 class iaBackendController extends iaAbstractControllerPluginBackend
 {
@@ -94,6 +117,10 @@ class iaBackendController extends iaAbstractControllerPluginBackend
 	protected function _assignValues(&$iaView, array &$entryData)
 	{
 		$iaPlan = $this->_iaCore->factory('plan');
+		$iaUsers = $this->_iaCore->factory('users');
+
+		$owner = empty($entryData['member_id']) ? iaUsers::getIdentity(true) : $iaUsers->getInfo($entryData['member_id']);
+		$entryData['owner'] = $owner['fullname'] . " ({$owner['email']})";
 
 		$plans = $iaPlan->getPlans($this->_itemName);
 
@@ -144,22 +171,7 @@ class iaBackendController extends iaAbstractControllerPluginBackend
 		$entry['sponsored_plan_id'] = (int)$data['sponsored_plan_id'];
 		$entry['latitude'] = $data['latitude'] ? $data['latitude'] : $entry['latitude'];
 		$entry['longitude'] = $data['longitude'] ? $data['longitude'] : $entry['longitude'];
-
-		if (!empty($data['owner']))
-		{
-			if ($memberId = $this->_iaCore->iaDb->one_bind('id', '`username` = :name OR `fullname` = :name', array('name' => iaSanitize::sql($_POST['owner'])), iaUsers::getTable()))
-			{
-				$entry['member_id'] = $memberId;
-			}
-			else
-			{
-				$this->addMessage('incorrect_owner_specified');
-			}
-		}
-		else
-		{
-			$entry['member_id'] = iaUsers::getIdentity()->id;
-		}
+		$entry['member_id'] = $data['member_id'];
 
 		if ($this->getMessages())
 		{

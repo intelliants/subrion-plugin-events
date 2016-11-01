@@ -4,8 +4,8 @@
 	<summary>List of your events. Displays calendar of events in a separate box.</summary>
 	<author>Intelliants LLC</author>
 	<contributor>Intelliants LLC</contributor>
-	<version>4.0.0</version>
-	<date>2015-12-25</date>
+	<version>4.0.2</version>
+	<date>2016-09-16</date>
 	<compatibility>4.0</compatibility>
 
 	<packageitems>
@@ -29,10 +29,12 @@
 	<config group="events" name="events_week_start" values="Sunday,Monday" type="select" description="The day week starts by">Sunday</config>
 	<config group="events" name="events_auto_approval" values="0,1" type="radio" description="Events Auto Approval">0</config>
 	<config group="events" name="events_ajax_popup" values="0,1" type="radio" description="Enable popup in Calendar">1</config>
+	<config group="events" name="events_show_past_events" values="0,1" type="radio" description="Show Past events">1</config>
 	<config group="events" name="events_number_default" type="text" description="Number of events per page">10</config>
 	<config group="events" name="events_number_future" type="text" description="Number of events in Future Events block">10</config>
 	<config group="events" name="events_number_past" type="text" description="Number of events in Past Events block">5</config>
 	<config group="events" name="events_number_rss" type="text" description="Number of events per feed">10</config>
+	<config group="events" name="events_gmap_key" type="text" description="Google Map API key" private="0">AIzaSyCZiuPhCJ4MsjhcPARMd5wFPVFtFtdOgCc</config>
 	<config group="email_templates" type="divider" description="Events"><![CDATA[]]></config>
 	<config group="email_templates" type="radio" name="new_event_notification" values="1,0" description="New Event Submission">1</config>
 	<config group="email_templates" type="text" name="new_event_notification_subject">New event added by guest at {%SITE_NAME%}</config>
@@ -75,7 +77,6 @@
 		<phrase category="common" key="incorrect_repeat_value">Repeat type is incorrect.</phrase>
 		<phrase category="common" key="monthly">monthly</phrase>
 		<phrase category="common" key="once">once</phrase>
-		<phrase category="common" key="recurring">recurring</phrase>
 		<phrase category="common" key="repeat">Repeat</phrase>
 		<phrase category="common" key="venue">Venue</phrase>
 		<phrase category="common" key="yearly">yearly</phrase>
@@ -85,6 +86,7 @@
 		<phrase category="frontend" key="all_events_on_the_day">All events on this day</phrase>
 		<phrase category="frontend" key="closest_events">Closest Events</phrase>
 		<phrase category="frontend" key="empty">empty</phrase>
+		<phrase category="frontend" key="events_submission_is_not_allowed_for_guests">Events submission is not allowed for guests. You have to &lt;a href=":base_urllogin/"&gt;sign in&lt;/a&gt; or &lt;a href=":base_urlregistration/"&gt;register&lt;/a&gt; in order to place your event.</phrase>
 		<phrase category="frontend" key="event_delete_confirmation">Are you sure want to delete event?</phrase>
 		<phrase category="frontend" key="event_deleted">Event has been successfully removed</phrase>
 		<phrase category="frontend" key="event_details">Details</phrase>
@@ -95,18 +97,6 @@
 		<phrase category="frontend" key="find_event">Find Event</phrase>
 		<phrase category="frontend" key="invalid_date_specified">Invalid date specified.</phrase>
 		<phrase category="frontend" key="listings_found">Events found</phrase>
-		<phrase category="frontend" key="month1">January</phrase>
-		<phrase category="frontend" key="month2">February</phrase>
-		<phrase category="frontend" key="month3">March</phrase>
-		<phrase category="frontend" key="month4">April</phrase>
-		<phrase category="frontend" key="month5">May</phrase>
-		<phrase category="frontend" key="month6">June</phrase>
-		<phrase category="frontend" key="month7">July</phrase>
-		<phrase category="frontend" key="month8">August</phrase>
-		<phrase category="frontend" key="month9">September</phrase>
-		<phrase category="frontend" key="month10">October</phrase>
-		<phrase category="frontend" key="month11">November</phrase>
-		<phrase category="frontend" key="month12">December</phrase>
 		<phrase category="frontend" key="no_events">No events to show.</phrase>
 		<phrase category="frontend" key="no_events_for_day">No events on this day.</phrase>
 		<phrase category="frontend" key="no_search_term_provided">Nothing to search</phrase>
