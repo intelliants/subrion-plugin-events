@@ -6,7 +6,7 @@
 	<contributor>Intelliants LLC</contributor>
 	<version>4.0.2</version>
 	<date>2016-09-16</date>
-	<compatibility>4.0</compatibility>
+	<compatibility>4.1</compatibility>
 
 	<packageitems>
 		<item pages="view_member">events</item>
