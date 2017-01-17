@@ -24,8 +24,10 @@
  *
  ******************************************************************************/
 
+$iaDb->setTable('events');
 $iaUtil = iaCore::util();
 $iaEvent = $iaCore->factoryPlugin(IA_CURRENT_PLUGIN);
+$baseUrl = IA_URL . 'events';
 
 if (iaView::REQUEST_JSON == $iaView->getRequestType())
 {
@@ -66,7 +68,7 @@ if (iaView::REQUEST_HTML == $iaView->getRequestType())
 	$pageActions[] = array(
 		'icon' => 'rss',
 		'title' => '',
-		'url' => IA_URL . 'events/rss/',
+		'url' => IA_URL . 'events/events.xml',
 		'classes' => 'btn-warning'
 	);
 
@@ -182,3 +184,50 @@ if (iaView::REQUEST_HTML == $iaView->getRequestType())
 
 	$iaView->display('index');
 }
+//Added code to display correct XML / RSS => rss.php can be left out now
+//Also added event start & end date
+if(iaView::REQUEST_XML == $iaView->getRequestType()) {
+	
+	$output = array(
+		'title' => $iaCore->get('site') . ' :: ' . $iaView->title(),
+		'description' => ' ',
+		'link' => $baseUrl,
+		'item' => array()
+	);
+	
+	//Add default Feed Image displayed in RSS Readers
+	//You can add your own by replacing rss.png by other image using same name
+	$output['image'][] = array(
+		'title' => $iaCore->get('site') . ' :: ' . $iaView->title(),
+		'url' => IA_CLEAR_URL . 'plugins/events/templates/front/img/rss.png',
+		'link' => $baseUrl
+	);
+
+	$limit = $iaCore->get('events_number_rss', 10);
+	$entries = $iaEvent->get(array(), 0, $limit);
+	
+	foreach ($entries as $entry) {
+				
+		//Create nice Event Multi-Language Description with Location, Start/End Date & Image included
+		$desc = '';
+		$desc.= iaLanguage::get('venue') .': '. $entry["venue"] . '&lt;br&gt; ';
+		$desc.= iaLanguage::get("date_start") .': '. $entry["date"] . '&lt;br&gt;';
+		$desc.= iaLanguage::get("date_end") .': '. $entry["date_end"] . '&lt;br&gt;';
+		if($entry['image']!='') {
+			//Let's add the event image as well, if used
+			$desc.= '<p><img src="' . IA_CLEAR_URL . 'uploads/' . $entry["image"] . '"/></p>';
+		}
+		$desc.= iaSanitize::tags($entry["description"]);
+
+		$output['item'][] = array(
+			'title' => iaSanitize::tags($entry['title']),
+			'pubDate' => date('D, d M Y H:i:s O'),
+			'guid' => $entry['url'],
+			'description' => $desc
+		);
+	}
+
+	$iaView->assign('channel', $output);
+}
+
+$iaDb->resetTable();
