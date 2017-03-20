@@ -57,7 +57,7 @@ class iaBackendController extends iaAbstractControllerPluginBackend
 	protected function _preSaveEntry(array &$entry, array $data, $action)
 	{
 		$entry['title'] = $data['title'];
-		$entry['slug'] = strtolower(iaSanitize::alias(isset($data['slug']) && $data['slug']) ? $data['slug'] : $entry['title']);
+		$entry['slug'] = strtolower(iaSanitize::alias(isset($data['slug']) && $data['slug'] ? $data['slug'] : $entry['title']));
 		$entry['status'] = $data['status'];
 
 		$requiredFields = array('title', 'slug');
