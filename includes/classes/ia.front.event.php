@@ -114,7 +114,7 @@ SQL;
         return $baseUrl . $uri;
     }
 
-    public function coreSearch($query, $start, $limit)
+    public function coreSearch($query, $start, $limit, $order)
     {
         $where = '(e.`title_:lang` LIKE :query OR e.`description` LIKE :query OR e.`venue` LIKE :query)';
         $this->iaDb->bind($where,

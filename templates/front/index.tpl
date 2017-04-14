@@ -25,7 +25,11 @@
                         {if $event.venue}, <br><span class="fa fa-map-marker"></span> {$event.venue|escape:'html'}{/if}
                     </div>
 
-                    {$event.description|strip_tags|truncate:300:"..."}
+                    {if !empty($event.summary)}
+                        {$event.summary}
+                    {else}
+                        {$event.description|truncate:300:'...'}
+                    {/if}
                 </div>
                 <div class="media-info">
                     <span class="fa fa-user"></span>

@@ -5,7 +5,7 @@
     <author>Intelliants LLC</author>
     <contributor>Intelliants LLC</contributor>
     <version>4.1.0</version>
-    <date>2017-04-06</date>
+    <date>2017-04-14</date>
     <compatibility>4.1</compatibility>
 
     <items>
@@ -71,6 +71,7 @@
         <field name="date" item="events" type="date" group="general" timepicker="1" page="event_edit,event_add">Date Start</field>
         <field name="date_end" item="events" type="date" group="general" timepicker="1" page="event_edit,event_add">Date End</field>
         <!--<field name="repeat" item="events" type="combo" group="general" values="none||Once,monthly||Monthly,yearly||Yearly" default="none" required="1" page="event_edit,event_add">Repeat</field>-->
+        <field name="summary" item="events" type="textarea" group="general" editor="0" required="0" multilingual="1" adminonly="1">Summary</field>
         <field name="description" item="events" type="textarea" group="general" editor="1" multilingual="1" page="event_edit,event_add">Description</field>
         <field name="image" item="events" type="image" group="general" thumb_width="400" thumb_height="300" width="1200" height="900" prefix="events_" editable="0" page="event_edit,event_add">Image</field>
         <field name="venue" item="events" type="text" group="general" length="255" page="event_edit,event_add">Venue</field>
@@ -96,6 +97,7 @@
         <phrase category="common" key="event_updated">Event data has been successfully updated.</phrase>
         <phrase category="common" key="events">Events</phrase>
         <phrase category="common" key="incorrect_repeat_value">Repeat type is incorrect.</phrase>
+        <phrase category="common" key="none">none</phrase>
         <phrase category="common" key="monthly">monthly</phrase>
         <phrase category="common" key="once">once</phrase>
         <phrase category="common" key="repeat">Repeat</phrase>
