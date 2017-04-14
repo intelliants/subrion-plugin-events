@@ -26,208 +26,197 @@
 
 $iaDb->setTable('events');
 $iaUtil = iaCore::util();
-$iaEvent = $iaCore->factoryPlugin(IA_CURRENT_PLUGIN);
+$iaEvent = $iaCore->factoryPlugin(IA_CURRENT_MODULE);
 $baseUrl = IA_URL . 'events';
+$iaUsers = $iaCore->factory('users');
 
-if (iaView::REQUEST_JSON == $iaView->getRequestType())
-{
-	if (isset($_GET['action']) && $_GET['action'] == 'get_by_date')
-	{
-		$date = $_GET['date'];
+if (iaView::REQUEST_JSON == $iaView->getRequestType()) {
+    if (isset($_GET['action']) && $_GET['action'] == 'get_by_date') {
+        $date = $_GET['date'];
 
-		$data = $iaEvent->getByDate($date, 2);
-/*
-		foreach($data as $key => $item)
-		{
-			$data[$key]['date'] = date($iaEvent->getDateFormat(), strtotime($item['date']));
-			$data[$key]['date_end'] = date($iaEvent->getDateFormat(), strtotime($item['date_end']));
-		}
-*/
-		$iaView->jsonp($data);
-	}
+        $data = $iaEvent->getByDate($date, 2);
+        /*
+                foreach($data as $key => $item)
+                {
+                    $data[$key]['date'] = date($iaEvent->getDateFormat(), strtotime($item['date']));
+                    $data[$key]['date_end'] = date($iaEvent->getDateFormat(), strtotime($item['date_end']));
+                }
+        */
+        $iaView->jsonp($data);
+    }
 }
 
-if (iaView::REQUEST_HTML == $iaView->getRequestType())
-{
-	$limit = $iaCore->get('events_number_default', 10);
-	$page = max(1, isset($_GET['page']) && is_numeric($_GET['page']) ? (int)$_GET['page'] : 0);
-	$start = ($page - 1) * $limit;
+if (iaView::REQUEST_HTML == $iaView->getRequestType()) {
+    $limit = $iaCore->get('events_number_default', 10);
+    $page = max(1, isset($_GET['page']) && is_numeric($_GET['page']) ? (int)$_GET['page'] : 0);
+    $start = ($page - 1) * $limit;
 
-	$paginator = array(
-		'limit' => $limit,
-		'template' => IA_URL . 'events/?page={page}',
-		'total' => 0
-	);
+    $paginator = [
+        'limit' => $limit,
+        'template' => IA_URL . 'events/?page={page}',
+        'total' => 0
+    ];
 
-	$pageActions[] = array(
-		'icon' => 'plus-circle',
-		'title' => iaLanguage::get('add_new_event'),
-		'url' => IA_URL . 'events/add/'
-	);
+    $pageActions[] = [
+        'icon' => 'plus-circle',
+        'title' => iaLanguage::get('add_new_event'),
+        'url' => IA_URL . 'events/add/'
+    ];
 
-	$pageActions[] = array(
-		'icon' => 'rss',
-		'title' => '',
-		'url' => IA_URL . 'events/events.xml',
-		'classes' => 'btn-warning'
-	);
+    $pageActions[] = [
+        'icon' => 'rss',
+        'title' => '',
+        'url' => IA_URL . 'events/events.xml',
+        'classes' => 'btn-warning'
+    ];
 
-	if ('delete' == $pageAction)
-	{
-		if (iaUsers::hasIdentity())
-		{
-			$eventId = intval($iaCore->requestPath[0]);
-			if (empty($eventId))
-			{
-				return $iaView->errorPage(iaLanguage::get('invalid_parameters'));
-			}
-			else
-			{
-				$stmt = iaDb::printf("`id` = ':id' AND `member_id` = ':owner'", array('id' => $eventId, 'owner' => iaUsers::getIdentity()->id));
-				$iaDb->delete($stmt);
+    if ('delete' == $pageAction) {
+        if (iaUsers::hasIdentity()) {
+            $eventId = intval($iaCore->requestPath[0]);
+            if (empty($eventId)) {
+                return $iaView->errorPage(iaLanguage::get('invalid_parameters'));
+            } else {
+                $stmt = iaDb::printf("`id` = ':id' AND `member_id` = ':owner'",
+                    ['id' => $eventId, 'owner' => iaUsers::getIdentity()->id]);
+                $iaDb->delete($stmt);
 
-				$iaUtil->redirect(iaLanguage::get('thanks'), iaLanguage::get('event_deleted'), IA_URL . 'profile/events/');
-			}
-		}
-		else
-		{
-			return iaView::accessDenied();
-		}
-	}
+                $iaUtil->redirect(iaLanguage::get('thanks'), iaLanguage::get('event_deleted'),
+                    IA_URL . 'profile/events/');
+            }
+        } else {
+            return iaView::accessDenied();
+        }
+    }
 
-	if (isset($iaCore->requestPath[0]))
-	{
-		switch (true)
-		{
-			case ('date' == $iaCore->requestPath[0]):
-				$offset = array('year' => 1, 'month' => 2, 'day' => 3);
-				$date = array(
-					$offset['year'] => intval($iaCore->requestPath[1]),
-					$offset['month'] => intval($iaCore->requestPath[2]),
-					$offset['day'] => intval($iaCore->requestPath[3])
-				);
-				if (!checkdate($date[$offset['month']], $date[$offset['day']], $date[$offset['year']]))
-				{
-					return iaView::errorPage(iaView::ERROR_NOT_FOUND, iaLanguage::get('invalid_date_specified'));
-				}
+    if (isset($iaCore->requestPath[0])) {
+        switch (true) {
+            case ('date' == $iaCore->requestPath[0]):
 
-				$stmt = sprintf('%d-%02d-%02d', $date[$offset['year']], $date[$offset['month']], $date[$offset['day']]);
-				$events = $iaEvent->getByDate($stmt, 1000);
+                $offset = ['year' => 1, 'month' => 2, 'day' => 3];
+                $date = [
+                    $offset['year'] => intval($iaCore->requestPath[1]),
+                    $offset['month'] => intval($iaCore->requestPath[2]),
+                    $offset['day'] => intval($iaCore->requestPath[3])
+                ];
+                if (!checkdate($date[$offset['month']], $date[$offset['day']], $date[$offset['year']])) {
+                    return iaView::errorPage(iaView::ERROR_NOT_FOUND, iaLanguage::get('invalid_date_specified'));
+                }
+                $stmt = sprintf('%d-%02d-%02d', $date[$offset['year']], $date[$offset['month']], $date[$offset['day']]);
+                $events = $iaEvent->getByDate($stmt, 1000);
 
-				$title = sprintf('%02d %s %d', $date[$offset['day']], iaLanguage::get('month' . $date[$offset['month']]), $date[$offset['year']]);
+                $title = sprintf('%02d %s %d', $date[$offset['day']],
+                    iaLanguage::get('month' . $date[$offset['month']]), $date[$offset['year']]);
 
-				iaBreadcrumb::add(iaLanguage::get('events'), IA_URL . 'events/');
-				iaBreadcrumb::replaceEnd($title, IA_SELF);
+                iaBreadcrumb::add(iaLanguage::get('events'), IA_URL . 'events/');
+                iaBreadcrumb::replaceEnd($title, IA_SELF);
 
-				$iaView->title(iaLanguage::getf('events_on_date', array('date' => $title)));
+                $iaView->title(iaLanguage::getf('events_on_date', ['date' => $title]));
 
-				break;
+                break;
 
-			case ($category = $iaDb->row(iaDb::ALL_COLUMNS_SELECTION, iaDb::convertIds($iaCore->requestPath[0], 'slug'), $iaEvent->getCategoriesTable())):
-				iaBreadcrumb::add(iaLanguage::get('events'), IA_URL . 'events/');
-				iaBreadcrumb::replaceEnd($category['title'], IA_SELF);
+            case ($category = $iaDb->row(iaDb::ALL_COLUMNS_SELECTION, iaDb::convertIds($iaCore->requestPath[0], 'slug'),
 
-				$iaView->set('events_category_id', $category['id']);
-				$iaView->title($category['title']);
+                $iaEvent->getCategoriesTable())):
 
-				$events = $iaEvent->get(array('category_id' => $category['id']), $start, $limit);
+                iaBreadcrumb::add(iaLanguage::get('events'), IA_URL . 'events/');
+                iaBreadcrumb::replaceEnd($category['title_' . $iaCore->language['iso']], IA_SELF);
 
-				break;
+                $iaView->set('events_category_id', $category['id']);
+                $iaView->title($category['title_' . $iaCore->language['iso']]);
 
-			default:
-				return iaView::errorPage(iaView::ERROR_NOT_FOUND);
-		}
-	}
-	elseif ('event_my' == $iaView->name())
-	{
-		if (!iaUsers::hasIdentity())
-		{
-			return iaView::accessDenied();
-		}
+                $events = $iaEvent->get(['category_id' => $category['id']], $start, $limit);
 
-		$events = $iaEvent->get(array('member_id' => iaUsers::getIdentity()->id), $start, $limit, false, true, true);
-	}
-	elseif ('event_search' == $iaView->name())
-	{
-		if (!isset($_GET['term']))
-		{
-			return iaView::errorPage(iaLanguage::get('no_search_term_provided'));
-		}
+                break;
 
-		$term = strip_tags($_GET['term']);
+            default:
 
-		if (empty($term))
-		{
-			return iaView::errorPage(iaLanguage::get('no_search_term_provided'));
-		}
+                return iaView::errorPage(iaView::ERROR_NOT_FOUND);
+        }
+    } elseif ('event_my' == $iaView->name()) {
+        if (!iaUsers::hasIdentity()) {
+            return iaView::accessDenied();
+        }
 
-		$stmt = iaDb::printf("CONCAT(t1.`title`, t1.`description`, t1.`venue`) LIKE '%:term%'", array('term' => iaSanitize::sql($term)));
-		$events = $iaEvent->get(array(), $start, $limit, $stmt);
+        $events = $iaEvent->get(['member_id' => iaUsers::getIdentity()->id], $start, $limit, false, true, true);
+    } elseif ('event_search' == $iaView->name()) {
+        if (!isset($_GET['term'])) {
+            return iaView::errorPage(iaLanguage::get('no_search_term_provided'));
+        }
 
-		iaBreadcrumb::add(iaLanguage::get('events'), IA_URL . 'events/');
+        $term = strip_tags($_GET['term']);
 
-		$paginator['template'] = IA_URL . 'events/search/?term=' . $term . '&page={page}';
+        if (empty($term)) {
+            return iaView::errorPage(iaLanguage::get('no_search_term_provided'));
+        }
 
-		$iaView->assign('term', $term);
-	}
-	else
-	{
-		$events = $iaEvent->get(array(), $start, $limit, false, false);
-	}
+        $stmt = iaDb::printf("CONCAT(t1.`title, t1.`description`, t1.`venue`) LIKE '%:term%'",
+            ['term' => iaSanitize::sql($term), 'lang'=>$iaCore->language['iso']]);
+        $events = $iaEvent->get([], $start, $limit, $stmt);
 
-	$paginator['total'] = $iaDb->foundRows();
+        iaBreadcrumb::add(iaLanguage::get('events'), IA_URL . 'events/');
 
-	$iaView->assign('items', $events);
-	$iaView->assign('paginator', $paginator);
+        $paginator['template'] = IA_URL . 'events/search/?term=' . $term . '&page={page}';
 
-	$iaView->set('actions', $pageActions);
+        $iaView->assign('term', $term);
+    } else {
 
-	$iaView->display('index');
+        $events = $iaEvent->get([], $start, $limit, false, false);
+
+    }
+
+    $paginator['total'] = $iaDb->foundRows();
+
+    $iaView->assign('items', $events);
+    $iaView->assign('paginator', $paginator);
+
+    $iaView->set('actions', $pageActions);
+
+    $iaView->display('index');
 }
 //Added code to display correct XML / RSS => rss.php can be left out now
 //Also added event start & end date
-if(iaView::REQUEST_XML == $iaView->getRequestType()) {
-	
-	$output = array(
-		'title' => $iaCore->get('site') . ' :: ' . $iaView->title(),
-		'description' => ' ',
-		'link' => $baseUrl,
-		'item' => array()
-	);
-	
-	//Add default Feed Image displayed in RSS Readers
-	//You can add your own by replacing rss.png by other image using same name
-	$output['image'][] = array(
-		'title' => $iaCore->get('site') . ' :: ' . $iaView->title(),
-		'url' => IA_CLEAR_URL . 'plugins/events/templates/front/img/rss.png',
-		'link' => $baseUrl
-	);
+if (iaView::REQUEST_XML == $iaView->getRequestType()) {
 
-	$limit = $iaCore->get('events_number_rss', 10);
-	$entries = $iaEvent->get(array(), 0, $limit);
-	
-	foreach ($entries as $entry) {
-				
-		//Create nice Event Multi-Language Description with Location, Start/End Date & Image included
-		$desc = '';
-		$desc.= iaLanguage::get('venue') .': '. $entry["venue"] . '&lt;br&gt; ';
-		$desc.= iaLanguage::get("date_start") .': '. $entry["date"] . '&lt;br&gt;';
-		$desc.= iaLanguage::get("date_end") .': '. $entry["date_end"] . '&lt;br&gt;';
-		if($entry['image']!='') {
-			//Let's add the event image as well, if used
-			$desc.= '<p><img src="' . IA_CLEAR_URL . 'uploads/' . $entry["image"] . '"/></p>';
-		}
-		$desc.= iaSanitize::tags($entry["description"]);
+    $output = [
+        'title' => $iaCore->get('site') . ' :: ' . $iaView->title(),
+        'description' => ' ',
+        'link' => $baseUrl,
+        'item' => []
+    ];
 
-		$output['item'][] = array(
-			'title' => iaSanitize::tags($entry['title']),
-			'pubDate' => date('D, d M Y H:i:s O'),
-			'guid' => $entry['url'],
-			'description' => $desc
-		);
-	}
+    //Add default Feed Image displayed in RSS Readers
+    //You can add your own by replacing rss.png by other image using same name
+    $output['image'][] = [
+        'title' => $iaCore->get('site') . ' :: ' . $iaView->title(),
+        'url' => IA_CLEAR_URL . 'plugins/events/templates/front/img/rss.png',
+        'link' => $baseUrl
+    ];
 
-	$iaView->assign('channel', $output);
+    $limit = $iaCore->get('events_number_rss', 10);
+    $entries = $iaEvent->get([], 0, $limit);
+
+    foreach ($entries as $entry) {
+
+        //Create nice Event Multi-Language Description with Location, Start/End Date & Image included
+        $desc = '';
+        $desc .= iaLanguage::get('venue') . ': ' . $entry["venue"] . '&lt;br&gt; ';
+        $desc .= iaLanguage::get("date_start") . ': ' . $entry["date"] . '&lt;br&gt;';
+        $desc .= iaLanguage::get("date_end") . ': ' . $entry["date_end"] . '&lt;br&gt;';
+        if ($entry['image'] != '') {
+            //Let's add the event image as well, if used
+            $desc .= '<p><img src="' . IA_CLEAR_URL . 'uploads/' . $entry["image"] . '"/></p>';
+        }
+        $desc .= iaSanitize::tags($entry["description"]);
+
+        $output['item'][] = [
+            'title' => iaSanitize::tags($entry['title']),
+            'pubDate' => date('D, d M Y H:i:s O'),
+            'guid' => $entry['url'],
+            'description' => $desc
+        ];
+    }
+
+    $iaView->assign('channel', $output);
 }
 
 $iaDb->resetTable();

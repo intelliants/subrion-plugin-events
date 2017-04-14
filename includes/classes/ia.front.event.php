@@ -1,4 +1,5 @@
 <?php
+
 /******************************************************************************
  *
  * Subrion - open source content management system
@@ -23,197 +24,276 @@
  * @link http://www.subrion.org/
  *
  ******************************************************************************/
-
-class iaEvent extends abstractCore
+class iaEvent extends abstractModuleFront
 {
-	protected static $_table = 'events';
-	protected $_categoriesTable = 'events_categories';
+    protected static $_table = 'events';
+    protected $_categoriesTable = 'events_categories';
 
-	protected static $_itemName = 'events';
+    protected $_itemName = 'events';
 
-	protected $_repeatOptions = array('none', 'monthly', 'yearly');
-	protected $_statusOptions = array(iaCore::STATUS_ACTIVE, iaCore::STATUS_INACTIVE);
+//    protected $_repeatOptions = ['none', 'monthly', 'yearly'];
+    protected $_statusOptions = [iaCore::STATUS_ACTIVE, iaCore::STATUS_INACTIVE];
 
-	protected $_dateFormat = 'Y-m-d H:i';
+    protected $_dateFormat = 'Y-m-d H:i';
 
+    public $foundRows;
 
-	public function getCategoriesTable()
-	{
-		return $this->_categoriesTable;
-	}
+    public function getCategoriesTable()
+    {
+        return $this->_categoriesTable;
+    }
 
-	protected function _get($conditions = array(), $additionalConditions = null, $start, $limit, $defaultSorting = true)
-	{
-		$where = iaDb::EMPTY_CONDITION;
-		if ($conditions)
-		{
-			foreach ($conditions as $column => $value)
-				$where.= " AND e.`$column` = '" . iaSanitize::sql($value) . "'";
-		}
+    protected function _get($conditions = [], $additionalConditions = null, $start, $limit, $defaultSorting = true)
+    {
+        $where = iaDb::EMPTY_CONDITION;
+        if ($conditions) {
+            foreach ($conditions as $column => $value) {
+                $where .= " AND e.`$column` = '" . iaSanitize::sql($value) . "'";
+            }
+        }
 
-		empty($additionalConditions) || $where.= ' AND ' . $additionalConditions;
+        empty($additionalConditions) || $where .= ' AND ' . $additionalConditions;
 
-		if (!$this->iaCore->get('events_show_past_events'))
-		{
-			$where.= " AND e.`date_end` > DATE_ADD(NOW(), INTERVAL 1 MINUTE)";
-		}
+        if (!$this->iaCore->get('events_show_past_events')) {
+            $where .= " AND e.`date_end` > DATE_ADD(NOW(), INTERVAL 1 MINUTE)";
+        }
 
-		$sql =
-			'SELECT SQL_CALC_FOUND_ROWS '
-				. 'e.*, '
-				. 'DATE_FORMAT(e.`date`, ":format") `date`, DATE_FORMAT(e.`date_end`, ":format") `date_end`, '
-				. 'm.`username` `owner`, m.`fullname` `owner_fullname` '
-			. 'FROM `:table_events` e '
-			. 'LEFT JOIN `:table_members` m ON (m.`id` = e.`member_id`) '
-			. 'WHERE :where '
-			. 'GROUP BY e.`id` '
-			. 'ORDER BY e.`date` :direction '
-			. 'LIMIT :start, :limit';
+        $sql = <<<SQL
+SELECT SQL_CALC_FOUND_ROWS 
+e.*,
+DATE_FORMAT(e.`date`, ":format") `date`, DATE_FORMAT(e.`date_end`, ":format") `date_end`,
+m.`username` `owner`, m.`fullname` `owner_fullname`
+FROM `:table_events` e
+LEFT JOIN `:table_members` m ON (m.`id` = e.`member_id`)
+WHERE :where
+GROUP BY e.`id`
+ORDER BY e.`date` :direction
+LIMIT :start, :limit
+SQL;
 
-		$sql = iaDb::printf($sql, array(
-			'table_events' => self::getTable(true),
-			'table_members' => iaUsers::getTable(true),
-			'format' => $this->iaCore->get('date_format') . ' %H:%i',
-			'where' => $where,
-			'direction' => $defaultSorting ? iaDb::ORDER_ASC : iaDb::ORDER_DESC,
-			'start' => (int)$start,
-			'limit' => (int)$limit
-		));
+        $sql = iaDb::printf($sql, [
+            'table_events' => self::getTable(true),
+            'table_members' => iaUsers::getTable(true),
+            'format' => $this->iaCore->get('date_format') . ' %H:%i',
+            'where' => $where,
+            'direction' => $defaultSorting ? iaDb::ORDER_ASC : iaDb::ORDER_DESC,
+            'start' => (int)$start,
+            'limit' => (int)$limit,
+            'lang' => $this->iaCore->language['iso']
+        ]);
 
-		return $this->_processValues($this->iaDb->getAll($sql));
-	}
+        $result = $this->iaDb->getAll($sql);
+        $this->foundRows = $this->iaDb->foundRows();
+        $this->_processValues($result);
+        return $result;
+    }
 
-	public function getItemName()
-	{
-		return self::$_itemName;
-	}
+    public function url($action, array $listingData, $relativeToRoot = false)
+    {
+        $patterns = [
+            'default' => ':action/:id/',
+            'view' => 'event/:title-:id.html',
+            'my' => 'profile/events/'
+        ];
+        $baseUrl = ('my' == $action) ? IA_URL : $this->getInfo('url');
+        $baseUrl = IA_URL;
+//
+//        if ($action != 'view') {
+//            $baseUrl = $this->iaCore->factory('page')->getUrlByName('event_' . $action);
+//        }
 
-	public function url($eventData)
-	{
-		$alias = $eventData['title'];
+        $uri = iaDb::printf(
+            isset($patterns[$action]) ? $patterns[$action] : $patterns['default'],
+            [
+                'action' => $action,
+                'title' => isset($listingData['title_' . $this->iaCore->language['iso']]) ? iaSanitize::alias($listingData['title_' . $this->iaCore->language['iso']]) : '',
+                'id' => isset($listingData['id']) ? $listingData['id'] : ''
+            ]
+        );
 
-		if (empty($alias))
-		{
-			return false;
-		}
+        return $baseUrl . $uri;
+    }
 
-		iaCore::util();
-		iaUtil::loadUTF8Functions('ascii', 'validation', 'bad', 'utf8_to_ascii');
+    public function coreSearch($query, $start, $limit)
+    {
+        $where = '(e.`title_:lang` LIKE :query OR e.`description` LIKE :query OR e.`venue` LIKE :query)';
+        $this->iaDb->bind($where,
+            ['query' => '%' . iaSanitize::sql($query) . '%', 'lang' => $this->iaCore->language['iso']]);
 
-		utf8_is_ascii($alias) || $alias = utf8_to_ascii($alias);
+        $rows = $this->get(null, $start, $limit, $where);
 
-		$alias = iaSanitize::alias($alias);
+        return [$this->iaDb->foundRows(), $rows];
+    }
 
-		return iaDb::printf(':urlevent/:title-:id.html', array('url' => IA_URL, 'title' => $alias, 'id' => $eventData['id']));
-	}
+//    public function getRepeatOptions()
+//    {
+//        $result = [];
+//        foreach ($this->_repeatOptions as $option) {
+//            $result[$option] = iaLanguage::get($option == 'none' ? 'once' : $option);
+//        }
+//
+//        return $result;
+//    }
 
-	public function coreSearch($query, $start, $limit)
-	{
-		$where = '(e.`title` LIKE :query OR e.`description` LIKE :query OR e.`venue` LIKE :query)';
-		$this->iaDb->bind($where, array('query' => '%' . iaSanitize::sql($query) . '%'));
+    public function getStatusOptions()
+    {
+        $result = [];
+        foreach ($this->_statusOptions as $option) {
+            $result[$option] = iaLanguage::get($option);
+        }
 
-		$rows = $this->get(null, $start, $limit, $where);
+        return $result;
+    }
 
-		return array($this->iaDb->foundRows(), $rows);
-	}
+    public function getCategoryOptions()
+    {
+        return $this->iaDb->keyvalue(['id', 'title_' . $this->iaCore->language['iso']], null,
+            $this->getCategoriesTable());
+    }
 
-	protected function _processValues($entries)
-	{
-		if (is_array($entries))
-		{
-			foreach ($entries as &$entry)
-			{
-				$entry['url'] = $this->url($entry);
-			}
-		}
+    public function getCategories()
+    {
 
-		return $entries;
-	}
+        $sql = <<<SQL
+SELECT c.*, COUNT(e.`id`) `num`, c.`title_:lang` `title`
+FROM `:prefix:table_categories` c
+LEFT JOIN `:prefix:table_events` e ON :condition
+WHERE c.`status` = ':status'
+GROUP BY c.`id`
+ORDER BY c.`title_:lang`
+SQL;
 
-	public function getRepeatOptions()
-	{
-		$result = array();
-		foreach ($this->_repeatOptions as $option)
-		{
-			$result[$option] = iaLanguage::get($option == 'none' ? 'once' : $option);
-		}
+        $sql = iaDb::printf($sql, [
+            'prefix' => $this->iaDb->prefix,
+            'table_categories' => self::getCategoriesTable(),
+            'table_events' => self::getTable(),
+            'status' => iaCore::STATUS_ACTIVE,
+            'condition' => $this->iaCore->get('events_show_past_events')
+                ? "(e.`category_id` = c.`id` AND e.`status` = '" . iaCore::STATUS_ACTIVE . "') "
+                : "(e.`category_id` = c.`id` AND e.`status` = '" . iaCore::STATUS_ACTIVE . "' AND e.`date_end` > DATE_ADD(NOW(), INTERVAL 1 MINUTE)) ",
+            'lang' => $this->iaCore->language['iso']
+        ]);
+        return $this->iaDb->getAll($sql);
+    }
 
-		return $result;
-	}
+    public function getDateFormat()
+    {
+        return $this->_dateFormat;
+    }
 
-	public function getStatusOptions()
-	{
-		$result = array();
-		foreach ($this->_statusOptions as $option)
-		{
-			$result[$option] = iaLanguage::get($option);
-		}
+    public function get(
+        $conditions,
+        $start,
+        $limit,
+        $additionalStatement = false,
+        $direction = true,
+        $ignoreStatus = false
+    ) {
+        $ignoreStatus || $conditions['status'] = iaCore::STATUS_ACTIVE;
 
-		return $result;
-	}
+        return $this->_get(array_merge($conditions), $additionalStatement ? $additionalStatement : null, $start, $limit,
+            $direction);
+    }
 
-	public function getCategoryOptions()
-	{
-		return $this->iaDb->keyvalue(array('id', 'title'), null, $this->getCategoriesTable());
-	}
+//    public function getForMonth($month, $year)
+//    {
+//        $sql = <<<SQL
+//SELECT `title`, DAYOFMONTH(`date`) `day_start`, DAYOFMONTH(`date_end`) `day_end`
+//FROM `:table`
+//WHERE `status` = 'active'
+//AND (MONTH(`date`) = ':month'
+//AND YEAR(`date`) = ':year'
+//AND `repeat` = 'none')
+//OR (`repeat` = 'yearly'
+//AND MONTH(`date`) = ':month')
+//OR (`repeat` = 'monthly')";
+//SQL;
+//
+//
+//
+//        $sql = iaDb::printf($sql, [
+//            'table' => self::getTable(true),
+//            'month' => $month,
+//            'year' => $year
+//        ]);
+//
+//        return $this->iaCore->iaDb->getAll($sql);
+//    }
 
-	public function getCategories()
-	{
-		$sql = 'SELECT c.*, COUNT(e.`id`) `num` ';
-		$sql .= 'FROM `:prefix:table_categories` c ';
-		$sql .= "LEFT JOIN `:prefix:table_events` e ON ";
-		$sql .= $this->iaCore->get('events_show_past_events')
-			? "(e.`category_id` = c.`id` AND e.`status` = ':status') "
-			: "(e.`category_id` = c.`id` AND e.`status` = ':status' AND e.`date_end` > DATE_ADD(NOW(), INTERVAL 1 MINUTE)) ";
-		$sql .= "WHERE c.`status` = ':status' ";
-		$sql .= 'GROUP BY c.`id` ';
-		$sql .= 'ORDER BY c.`title`';
+    public function getFuture($limit)
+    {
+        return $this->_get(['status' => iaCore::STATUS_ACTIVE], "`date` > DATE_ADD(NOW(), INTERVAL 1 MINUTE)", 0,
+            $limit);
+    }
 
-		$sql = iaDb::printf($sql, array(
-			'prefix' => $this->iaDb->prefix,
-			'table_categories' => self::getCategoriesTable(),
-			'table_events' => self::getTable(),
-			'status' => iaCore::STATUS_ACTIVE
-		));
+    public function getPast($limit)
+    {
+        return $this->_get(['status' => iaCore::STATUS_ACTIVE], "`date_end` < DATE_SUB(NOW(), INTERVAL 1 MINUTE)",
+            0, $limit, false);
+    }
 
-		return $this->iaDb->getAll($sql);
-	}
+    public function getByDate($date, $limit)
+    {
+        $conditions = "DATE_FORMAT(e.`date`, '%Y-%m-%d') <= '" . $date . "' AND "
+            . "DATE_FORMAT(e.`date_end`, '%Y-%m-%d') >= '" . $date . "'";
+        return $this->_get(['status' => iaCore::STATUS_ACTIVE], $conditions, 0, $limit);
+    }
 
-	public function getDateFormat()
-	{
-		return $this->_dateFormat;
-	}
+    public function getById($id, $decorate = true)
+    {
+        $sql = <<<SQL
+SELECT * FROM :table_events
+WHERE `id` = :id
+SQL;
+        $sql = iaDb::printf($sql, [
+            'table_events' => self::getTable(true),
+            'id' => $id
+        ]);
 
-	public function get($conditions, $start, $limit, $additionalStatement = false, $direction = true, $ignoreStatus = false)
-	{
-		$ignoreStatus || $conditions['status'] = iaCore::STATUS_ACTIVE;
+        $result = $this->iaDb->getRow($sql);
 
-		return $this->_get(array_merge($conditions), $additionalStatement ? $additionalStatement : null, $start, $limit, $direction);
-	}
+        $decorate && $this->_processValues($result, true);
 
-	public function getForMonth($month, $year)
-	{
-		$sql = "SELECT `title`, DAYOFMONTH(`date`) `day_start`, DAYOFMONTH(`date_end`) `day_end` FROM `:table` WHERE `status` = 'active' AND (MONTH(`date`) = ':month' AND YEAR(`date`) = ':year' AND `repeat` = 'none') OR (`repeat` = 'yearly' AND MONTH(`date`) = ':month') OR (`repeat` = 'monthly')";
-		$sql = iaDb::printf($sql, array('table' => self::getTable(true), 'month' => $month, 'year' => $year));
+        return $result;
+    }
 
-		return $this->iaCore->iaDb->getAll($sql);
-	}
+    public function insert(array $listingData)
+    {
+        $listingData['member_id'] = iaUsers::hasIdentity() ? iaUsers::getIdentity()->id : 0;
 
-	public function getFuture($limit)
-	{
-		return $this->_get(array('status' => iaCore::STATUS_ACTIVE), "`date` > DATE_ADD(NOW(), INTERVAL 1 MINUTE)", 0, $limit);
-	}
+        $result = parent::insert($listingData);
 
-	public function getPast($limit)
-	{
-		return $this->_get(array('status' => iaCore::STATUS_ACTIVE), "`date_end` < DATE_SUB(NOW(), INTERVAL 1 MINUTE)", 0, $limit, false);
-	}
+        if (!iaUsers::hasIdentity() && $result) {
+            $this->_rememberUsersListing($listingData, $result);
+        }
 
-	public function getByDate($date, $limit)
-	{
-		$conditions = "DATE_FORMAT(t1.`date`, '%Y-%m-%d') <= '" . $date . "' AND "
-						. "DATE_FORMAT(t1.`date_end`, '%Y-%m-%d') >= '" . $date . "'";
+        return $result;
+    }
 
-		return $this->_get(array('status' => iaCore::STATUS_ACTIVE), $conditions, 0, $limit);
-	}
+    public function update(array $itemData, $id)
+    {
+        if (empty($id)) {
+            return false;
+        }
+
+        $currentData = $this->iaDb->row(iaDb::ALL_COLUMNS_SELECTION, iaDb::convertIds($id), self::getTable());
+        $result = (bool)$this->iaDb->update($itemData, iaDb::convertIds($id), null, self::getTable());
+
+        if ($result) {
+
+            $this->iaCore->startHook('phpListingUpdated', [
+                'itemId' => $id,
+                'itemName' => $this->getItemName(),
+                'itemData' => $itemData,
+                'previousData' => $currentData
+            ]);
+        }
+
+        return $result;
+    }
+
+    public function getListingCountCurrentMember()
+    {
+        return $this->iaDb->one('COUNT(*)', "`member_id` = '" . iaUsers::getIdentity()->id . "' && `status` = '" . iaCore::STATUS_ACTIVE . "'", self::getTable());
+    }
 }

@@ -1,7 +1,6 @@
 #event-popup {
 	display: none;
 	position: absolute;
-	width: 300px;
 	height: auto;
 	padding: 10px;
 	z-index: 1000;
@@ -56,7 +55,6 @@
 }
 
 #event-popup #view-all-events {
-	position: absolute;
 	bottom: 12px;
 	right: 12px;
 }

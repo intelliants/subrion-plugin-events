@@ -24,14 +24,16 @@
  *
  ******************************************************************************/
 
-class iaBackendController extends iaAbstractControllerPluginBackend
+class iaBackendController extends iaAbstractControllerModuleBackend
 {
 	protected $_name = 'categories';
 
 	protected $_table = 'events_categories';
 
-	protected $_gridColumns = array('title', 'slug', 'status');
-	protected $_gridFilters = array('status' => self::EQUAL, 'title' => self::LIKE);
+    protected $_itemName = 'events_categories';
+
+	protected $_gridColumns = ['title', 'slug', 'status'];
+	protected $_gridFilters = ['status' => self::EQUAL, 'title' => self::LIKE];
 
 
 	public function init()
@@ -47,26 +49,26 @@ class iaBackendController extends iaAbstractControllerPluginBackend
 
 	protected function _setDefaultValues(array &$entry)
 	{
-		$entry = array(
-			'title' => '',
-			'slug' => '',
+		$entry = [
+			'title_'. $this->_iaCore->language['iso'] => '',
+		    'slug' => '',
 			'status' => iaCore::STATUS_ACTIVE
-		);
+		];
 	}
 
 	protected function _preSaveEntry(array &$entry, array $data, $action)
 	{
-		$entry['title'] = $data['title'];
-		$entry['slug'] = strtolower(iaSanitize::alias(isset($data['slug']) && $data['slug'] ? $data['slug'] : $entry['title']));
-		$entry['status'] = $data['status'];
+	    parent::_preSaveEntry($entry, $data, $action);
 
-		$requiredFields = array('title', 'slug');
+	    $entry['slug'] = strtolower(iaSanitize::alias(isset($data['slug']) && $data['slug'] ? $data['slug'] : $entry['title_' . $this->_iaCore->language['iso']]));
+		$entry['status'] = $data['status'];
+		$requiredFields = ['title_' . $this->_iaCore->language['iso'], 'slug'];
 
 		foreach ($requiredFields as $fieldName)
 		{
 			if (empty($entry[$fieldName]))
 			{
-				$this->addMessage(iaLanguage::getf('field_is_empty', array('field' => iaLanguage::get($fieldName))), false);
+				$this->addMessage(iaLanguage::getf('field_is_empty', ['field' => iaLanguage::get($fieldName)]), false);
 			}
 		}
 
