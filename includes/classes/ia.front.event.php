@@ -95,12 +95,12 @@ SQL;
             'view' => 'event/:title-:id.html',
             'my' => 'profile/events/'
         ];
-        $baseUrl = ('my' == $action) ? IA_URL : $this->getInfo('url');
+//        $baseUrl = ('my' == $action) ? IA_URL : $this->getInfo('url');
         $baseUrl = IA_URL;
 //
-//        if ($action != 'view') {
-//            $baseUrl = $this->iaCore->factory('page')->getUrlByName('event_' . $action);
-//        }
+        if ($action != 'view') {
+            $baseUrl = $this->iaCore->factory('page')->getUrlByName('event_' . $action);
+        }
 
         $uri = iaDb::printf(
             isset($patterns[$action]) ? $patterns[$action] : $patterns['default'],
