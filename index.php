@@ -149,8 +149,8 @@ if (iaView::REQUEST_HTML == $iaView->getRequestType()) {
             return iaView::errorPage(iaLanguage::get('no_search_term_provided'));
         }
 
-        $stmt = iaDb::printf("CONCAT(t1.`title, t1.`description`, t1.`venue`) LIKE '%:term%'",
-            ['term' => iaSanitize::sql($term), 'lang'=>$iaCore->language['iso']]);
+        $stmt = iaDb::printf("CONCAT_WS(e.`title_:lang`, e.`description_:lang`, e.`venue`) LIKE '%:term%'",
+            ['term' => iaSanitize::sql($term), 'lang' => $iaCore->language['iso']]);
         $events = $iaEvent->get([], $start, $limit, $stmt);
 
         iaBreadcrumb::add(iaLanguage::get('events'), IA_URL . 'events/');
@@ -164,7 +164,7 @@ if (iaView::REQUEST_HTML == $iaView->getRequestType()) {
 
     }
 
-    $paginator['total'] = $iaDb->foundRows();
+    $paginator['total'] = $iaEvent->foundRows;
 
     $iaView->assign('items', $events);
     $iaView->assign('paginator', $paginator);

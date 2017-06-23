@@ -38,6 +38,7 @@ class iaEvent extends abstractModuleFront
 
     public $foundRows;
 
+
     public function getCategoriesTable()
     {
         return $this->_categoriesTable;
@@ -84,7 +85,9 @@ SQL;
 
         $result = $this->iaDb->getAll($sql);
         $this->foundRows = $this->iaDb->foundRows();
+
         $this->_processValues($result);
+
         return $result;
     }
 
