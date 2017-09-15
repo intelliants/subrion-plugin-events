@@ -59,17 +59,13 @@ class iaBackendController extends iaAbstractControllerModuleBackend
     protected function _gridQuery($columns, $where, $order, $start, $limit)
     {
         $sql = <<<SQL
-SELECT :columns,
-IF(m.`fullname` != "", m.`fullname`, m.`username`) `owner`,
-1 `update`, 1 `delete`
+SELECT :columns, IF(m.`fullname` != "", m.`fullname`, m.`username`) `owner`, 1 `update`, 1 `delete`
 FROM `:prefix:table_events` e
 LEFT JOIN `:prefix:table_members` m ON (m.`id` = e.`member_id`)
 :where 
 :order
 LIMIT :start, :limit
 SQL;
-
-
 
         $sql = iaDb::printf($sql, [
             'columns' => $columns,
@@ -79,7 +75,7 @@ SQL;
             'start' => $start,
             'limit' => $limit,
             'where' => $where ? 'WHERE ' . $where . ' ' : '',
-            'order' => $order
+            'order' => $order,
         ]);
 
         return $this->_iaDb->getAll($sql);
@@ -125,8 +121,6 @@ SQL;
 
         $categories = $this->_iaDb->keyvalue(['id', 'title_' . $this->_iaCore->language['iso']], null, 'events_categories');
 
-
-
         $repeatOptions = [];
         foreach ($this->_repeatOptions as $option) {
             $repeatOptions[$option] = iaLanguage::get($option);
@@ -142,6 +136,8 @@ SQL;
     {
         parent::_preSaveEntry($entry, $data, $action);
         $entry['category_id'] = $data['category_id'];
+        $entry['longitude'] = $data['longitude'];
+        $entry['latitude'] = $data['latitude'];
 
         return true;
     }

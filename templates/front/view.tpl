@@ -19,11 +19,11 @@
 
     {if $item.venue}
         <div id="event-venue-box" class="event-view__venue m-b">
-            <p><span class="fa fa-map-marker"></span> {$item.venue}</p>
-            <input type="hidden" id="event-venue" value="{$item.venue}">
-            <input type="hidden" name="longitude" value="{if isset($item.longitude)}{$item.longitude}{/if}">
-            <input type="hidden" name="latitude" value="{if isset($item.latitude)}{$item.latitude}{/if}">
-            <div id="event-gmap"></div>
+            <p><span class="fa fa-map-marker"></span> {$item.venue|escape}</p>
+            <input type="hidden" id="event-venue" value="{$item.venue|escape}">
+            <input type="hidden" name="longitude" value="{$item.longitude|escape}">
+            <input type="hidden" name="latitude" value="{$item.latitude|escape}">
+            {if $item.longitude && $item.latitude}<div id="event-gmap"></div>{/if}
         </div>
     {/if}
 </div>
@@ -33,7 +33,6 @@
     <div class="addthis_toolbox addthis_default_style ia-item__panel__item pull-left">
         <a class="addthis_counter addthis_pill_style"></a>
     </div>
-    <script type="text/javascript">var addthis_config = { "data_track_addressbar":true };</script>
     <script type="text/javascript" src="//s7.addthis.com/js/300/addthis_widget.js#pubid=ra-5228073734bf0c90"></script>
     <!-- AddThis Button END -->
 
@@ -41,7 +40,7 @@
         <span class="fa fa-user"></span>
         {if $item.owner}
             {lang key='published_by'}
-            <a href="{$smarty.const.IA_URL}member/{$item.owner}.html">{$item.owner_fullname}</a>
+            <a href="{$smarty.const.IA_URL}member/{$item.owner}.html">{$item.owner_fullname|escape}</a>
         {else}
             <i>{lang key='guest'}</i>
         {/if}

@@ -20,8 +20,11 @@ function mapInitialize() {
         marker.addListener('click', function () {
             infowindow.open(map, marker);
         });
+    };
+
+    if (lat && lng) {
+        placeMap();
     }
-    placeMap();
 }
 
 function loadScript(path, handler) {
@@ -41,7 +44,7 @@ $(function () {
         mapInitialize();
     }
     else {
-        loadScript('http://maps.googleapis.com/maps/api/js?callback=mapInitialize&key=' + intelli.config.events_gmap_key);
+        loadScript(location.protocol + '//maps.googleapis.com/maps/api/js?callback=mapInitialize&key=' + intelli.config.events_gmap_key);
     }
 
     $('.js-delete-event').on('click', function (e) {

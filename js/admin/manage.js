@@ -53,7 +53,7 @@ $(function () {
     }
 
 
-    $('#venue').on('input', function () {
+    $('#field_events_venue').on('input', function () {
         var fullAddress = '';
 
         if ('' != $(this).val()) {
