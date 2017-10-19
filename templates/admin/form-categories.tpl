@@ -10,7 +10,7 @@
                 {*<label class="col col-lg-2 control-label" for="input-title">{lang key='title'} {lang key='field_required'}</label>*}
 
                 {*<div class="col col-lg-4">*}
-                    {*<input type="text" name="title" id="input-title" value="{$item.title|escape:'html'}">*}
+                    {*<input type="text" name="title" id="input-title" value="{$item.title|escape}">*}
                 {*</div>*}
             {*</div>*}
 
@@ -18,10 +18,9 @@
                 {*<label class="col col-lg-2 control-label" for="input-slug">{lang key='slug'}</label>*}
 
                 {*<div class="col col-lg-4">*}
-                    {*<input type="text" name="slug" id="input-slug" value="{$item.slug|escape:'html'}">*}
+                    {*<input type="text" name="slug" id="input-slug" value="{$item.slug|escape}">*}
                 {*</div>*}
             {*</div>*}
         {*</div>*}
         {include 'field-type-content-fieldset.tpl' isSystem=true datetime=true}
-
 </form>

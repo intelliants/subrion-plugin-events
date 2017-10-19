@@ -20,7 +20,7 @@
  * along with Subrion. If not, see <http://www.gnu.org/licenses/>.
  *
  *
- * @link http://www.subrion.org/
+ * @link https://subrion.org/
  *
  ******************************************************************************/
 
@@ -70,14 +70,12 @@ if ($iaView->getRequestType() == iaView::REQUEST_HTML) {
 
             $iaView->setMessages($messages);
         } else {
-
             if (iaCore::ACTION_ADD == $pageAction) {
                 $item['status'] = $iaCore->get('events_auto_approval') ? iaCore::STATUS_ACTIVE : iaCore::STATUS_INACTIVE;
                 $item['category_id'] = (int)$_POST['category_id'];
                 $item['id'] = $iaEvent->insert($item);
                 $result = (bool)$item['id'];
                 $messages[] = iaLanguage::get('listing_successfully_submitted');
-
             } else {
                 if (isset($_POST['status']) && $listing['status'] != iaCore::STATUS_INACTIVE) {
                     $item['status'] = iaSanitize::sql($_POST['status']);
@@ -101,8 +99,15 @@ if ($iaView->getRequestType() == iaView::REQUEST_HTML) {
                     $url = $iaPlan->prePayment($iaEvent->getItemName(), $item, $plan['id']);
                 } else {
                     $iaTransaction = $iaCore->factory('transaction');
-                    $transactionId = $iaTransaction->create(null, 0, $iaAuto->getItemName(), $item, '',
-                        (int)$_POST['plan_id'], true);
+                    $transactionId = $iaTransaction->create(
+                        null,
+                        0,
+                        $iaAuto->getItemName(),
+                        $item,
+                        '',
+                        (int)$_POST['plan_id'],
+                        true
+                    );
                     $transaction = $iaTransaction->getBy('sec_key', $transactionId);
                     $iaPlan->setPaid($transaction);
                 }

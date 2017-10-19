@@ -1,5 +1,5 @@
 <div class="event-view">
-    {if $item.image}
+    {if !empty($item.image)}
         <div class="event-view__image m-b">
             <div class="ia-item-image">{ia_image file=$item.image class='img-responsive'}</div>
         </div>
@@ -11,9 +11,9 @@
 
     <div class="event-view__date m-b">
         {if $item.date_end|strtotime > $smarty.server.REQUEST_TIME}
-            <span class="text-success"><span class="fa fa-clock-o"></span> {$item.date} - {$item.date_end}
+            <span class="text-success"><span class="fa fa-clock-o"></span> {$item.date|date_format:$core.config.date_format} - {$item.date_end|date_format:$core.config.date_format}
         {else}
-            <span class="fa fa-clock-o"></span> {$item.date} - {$item.date_end}
+            <span class="fa fa-clock-o"></span> {$item.date|date_format:$core.config.date_format} - {$item.date_end|date_format:$core.config.date_format}
         {/if}
     </div>
 

@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Subrion - open source content management system
- * Copyright (C) 2016 Intelliants, LLC <http://www.intelliants.com>
+ * Copyright (C) 2017 Intelliants, LLC <https://intelliants.com>
  *
  * This file is part of Subrion.
  *
@@ -20,13 +20,13 @@
  * along with Subrion. If not, see <http://www.gnu.org/licenses/>.
  *
  *
- * @link http://www.subrion.org/
+ * @link https://subrion.org/
  *
  ******************************************************************************/
 
 $iaDb->setTable('events');
 $iaUtil = iaCore::util();
-$iaEvent = $iaCore->factoryPlugin(IA_CURRENT_MODULE);
+$iaEvent = $iaCore->factoryModule('event', IA_CURRENT_MODULE);
 $baseUrl = IA_URL . 'events';
 $iaUsers = $iaCore->factory('users');
 
@@ -34,14 +34,6 @@ if (iaView::REQUEST_JSON == $iaView->getRequestType()) {
     if (isset($_GET['action']) && $_GET['action'] == 'get_by_date') {
         $date = $_GET['date'];
 
-        $data = $iaEvent->getByDate($date, 2);
-        /*
-                foreach($data as $key => $item)
-                {
-                    $data[$key]['date'] = date($iaEvent->getDateFormat(), strtotime($item['date']));
-                    $data[$key]['date_end'] = date($iaEvent->getDateFormat(), strtotime($item['date_end']));
-                }
-        */
         $iaView->jsonp($data);
     }
 }
@@ -76,12 +68,17 @@ if (iaView::REQUEST_HTML == $iaView->getRequestType()) {
             if (empty($eventId)) {
                 return $iaView->errorPage(iaLanguage::get('invalid_parameters'));
             } else {
-                $stmt = iaDb::printf("`id` = ':id' AND `member_id` = ':owner'",
-                    ['id' => $eventId, 'owner' => iaUsers::getIdentity()->id]);
+                $stmt = iaDb::printf(
+                    "`id` = ':id' AND `member_id` = ':owner'",
+                    ['id' => $eventId, 'owner' => iaUsers::getIdentity()->id]
+                );
                 $iaDb->delete($stmt);
 
-                $iaUtil->redirect(iaLanguage::get('thanks'), iaLanguage::get('event_deleted'),
-                    IA_URL . 'profile/events/');
+                $iaUtil->redirect(
+                    iaLanguage::get('thanks'),
+                    iaLanguage::get('event_deleted'),
+                    IA_URL . 'profile/events/'
+                );
             }
         } else {
             return iaView::accessDenied();
@@ -104,8 +101,12 @@ if (iaView::REQUEST_HTML == $iaView->getRequestType()) {
                 $stmt = sprintf('%d-%02d-%02d', $date[$offset['year']], $date[$offset['month']], $date[$offset['day']]);
                 $events = $iaEvent->getByDate($stmt, 1000);
 
-                $title = sprintf('%02d %s %d', $date[$offset['day']],
-                    iaLanguage::get('month' . $date[$offset['month']]), $date[$offset['year']]);
+                $title = sprintf(
+                    '%02d %s %d',
+                    $date[$offset['day']],
+                    iaLanguage::get('month' . $date[$offset['month']]),
+                    $date[$offset['year']]
+                );
 
                 iaBreadcrumb::add(iaLanguage::get('events'), IA_URL . 'events/');
                 iaBreadcrumb::replaceEnd($title, IA_SELF);
@@ -114,9 +115,12 @@ if (iaView::REQUEST_HTML == $iaView->getRequestType()) {
 
                 break;
 
-            case ($category = $iaDb->row(iaDb::ALL_COLUMNS_SELECTION, iaDb::convertIds($iaCore->requestPath[0], 'slug'),
+            case ($category = $iaDb->row(
+                iaDb::ALL_COLUMNS_SELECTION,
+                iaDb::convertIds($iaCore->requestPath[0], 'slug'),
 
-                $iaEvent->getCategoriesTable())):
+                $iaEvent->getCategoriesTable()
+            )):
 
                 iaBreadcrumb::add(iaLanguage::get('events'), IA_URL . 'events/');
                 iaBreadcrumb::replaceEnd($category['title_' . $iaCore->language['iso']], IA_SELF);
@@ -149,8 +153,10 @@ if (iaView::REQUEST_HTML == $iaView->getRequestType()) {
             return iaView::errorPage(iaLanguage::get('no_search_term_provided'));
         }
 
-        $stmt = iaDb::printf("CONCAT_WS(e.`title_:lang`, e.`description_:lang`, e.`venue`) LIKE '%:term%'",
-            ['term' => iaSanitize::sql($term), 'lang' => $iaCore->language['iso']]);
+        $stmt = iaDb::printf(
+            "CONCAT_WS(e.`title_:lang`, e.`description_:lang`, e.`venue`) LIKE '%:term%'",
+            ['term' => iaSanitize::sql($term), 'lang' => $iaCore->language['iso']]
+        );
         $events = $iaEvent->get([], $start, $limit, $stmt);
 
         iaBreadcrumb::add(iaLanguage::get('events'), IA_URL . 'events/');
@@ -159,9 +165,7 @@ if (iaView::REQUEST_HTML == $iaView->getRequestType()) {
 
         $iaView->assign('term', $term);
     } else {
-
         $events = $iaEvent->get([], $start, $limit, false, false);
-
     }
 
     $paginator['total'] = $iaEvent->foundRows;
@@ -176,7 +180,6 @@ if (iaView::REQUEST_HTML == $iaView->getRequestType()) {
 //Added code to display correct XML / RSS => rss.php can be left out now
 //Also added event start & end date
 if (iaView::REQUEST_XML == $iaView->getRequestType()) {
-
     $output = [
         'title' => $iaCore->get('site') . ' :: ' . $iaView->title(),
         'description' => ' ',

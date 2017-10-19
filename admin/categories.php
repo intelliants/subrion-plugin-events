@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Subrion - open source content management system
- * Copyright (C) 2016 Intelliants, LLC <http://www.intelliants.com>
+ * Copyright (C) 2017 Intelliants, LLC <https://intelliants.com>
  *
  * This file is part of Subrion.
  *
@@ -20,63 +20,60 @@
  * along with Subrion. If not, see <http://www.gnu.org/licenses/>.
  *
  *
- * @link http://www.subrion.org/
+ * @link https://subrion.org/
  *
  ******************************************************************************/
 
 class iaBackendController extends iaAbstractControllerModuleBackend
 {
-	protected $_name = 'categories';
+    protected $_name = 'categories';
 
-	protected $_table = 'events_categories';
+    protected $_table = 'events_categories';
 
     protected $_itemName = 'events_categories';
 
-	protected $_gridColumns = ['title', 'slug', 'status'];
-	protected $_gridFilters = ['status' => self::EQUAL, 'title' => self::LIKE];
+    protected $_gridColumns = ['title', 'slug', 'status'];
+    protected $_gridFilters = ['status' => self::EQUAL, 'title' => self::LIKE];
 
 
-	public function init()
-	{
-		$this->_template = 'form-categories';
-		$this->_path = IA_ADMIN_URL . 'events' . IA_URL_DELIMITER . $this->getName() . IA_URL_DELIMITER;
+    public function init()
+    {
+        $this->_template = 'form-categories';
+        $this->_path = IA_ADMIN_URL . 'events' . IA_URL_DELIMITER . $this->getName() . IA_URL_DELIMITER;
 
-		if (iaView::REQUEST_HTML == $this->_iaCore->iaView->getRequestType())
-		{
-			iaBreadcrumb::insert(iaLanguage::get('events'), IA_ADMIN_URL . 'events/', iaBreadcrumb::POSITION_FIRST + 1);
-		}
-	}
+        if (iaView::REQUEST_HTML == $this->_iaCore->iaView->getRequestType()) {
+            iaBreadcrumb::insert(iaLanguage::get('events'), IA_ADMIN_URL . 'events/', iaBreadcrumb::POSITION_FIRST + 1);
+        }
+    }
 
-	protected function _setDefaultValues(array &$entry)
-	{
-		$entry = [
-			'title_'. $this->_iaCore->language['iso'] => '',
-		    'slug' => '',
-			'status' => iaCore::STATUS_ACTIVE
-		];
-	}
+    protected function _setDefaultValues(array &$entry)
+    {
+        $entry = [
+            'title_'. $this->_iaCore->language['iso'] => '',
+            'slug' => '',
+            'status' => iaCore::STATUS_ACTIVE
+        ];
+    }
 
-	protected function _preSaveEntry(array &$entry, array $data, $action)
-	{
-	    parent::_preSaveEntry($entry, $data, $action);
+    protected function _preSaveEntry(array &$entry, array $data, $action)
+    {
+        parent::_preSaveEntry($entry, $data, $action);
 
-	    $entry['slug'] = strtolower(iaSanitize::alias(isset($data['slug']) && $data['slug'] ? $data['slug'] : $entry['title_' . $this->_iaCore->language['iso']]));
-		$entry['status'] = $data['status'];
-		$requiredFields = ['title_' . $this->_iaCore->language['iso'], 'slug'];
+        $entry['slug'] = strtolower(iaSanitize::alias(isset($data['slug']) && $data['slug'] ? $data['slug'] : $entry['title_' . $this->_iaCore->language['iso']]));
+        $entry['status'] = $data['status'];
+        $requiredFields = ['title_' . $this->_iaCore->language['iso'], 'slug'];
 
-		foreach ($requiredFields as $fieldName)
-		{
-			if (empty($entry[$fieldName]))
-			{
-				$this->addMessage(iaLanguage::getf('field_is_empty', ['field' => iaLanguage::get($fieldName)]), false);
-			}
-		}
+        foreach ($requiredFields as $fieldName) {
+            if (empty($entry[$fieldName])) {
+                $this->addMessage(iaLanguage::getf('field_is_empty', ['field' => iaLanguage::get($fieldName)]), false);
+            }
+        }
 
-		return !$this->getMessages();
-	}
+        return !$this->getMessages();
+    }
 
-	protected function _setPageTitle(&$iaView, array $entryData, $action)
-	{
-		$iaView->title(iaLanguage::get($action . '_category', $iaView->title()));
-	}
+    protected function _setPageTitle(&$iaView, array $entryData, $action)
+    {
+        $iaView->title(iaLanguage::get($action . '_category', $iaView->title()));
+    }
 }

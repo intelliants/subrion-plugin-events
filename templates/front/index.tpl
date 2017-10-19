@@ -1,4 +1,4 @@
-{if isset($items) && $items && isset($term)}
+{if !empty($items) && isset($term)}
     <div class="info m-b text-i">{lang key='listings_found'}: <b>{$paginator.total}</b></div>
 {/if}
 {if isset($items) && $items}
@@ -6,7 +6,7 @@
     <div class="ia-items events">
         {foreach $items as $event}
             <div class="media ia-item ia-item--border event">
-                {if $event.image}
+                {if !empty($event.image)}
                     <a href="{ia_url type='url' item='events' data=$event}" class="media-object pull-left">{ia_image file=$event.image type="thumbnail" class='img-rounded img-responsive' width="100"}</a>
                 {else}
                     <a href="{ia_url type='url' item='events' data=$event}" class="media-object pull-left">{ia_image class='img-rounded img-responsive' width="100"}</a>
@@ -14,15 +14,15 @@
 
                 <div class="media-body">
                     <h4 class="media-heading">
-                        <a href="{ia_url type='url' item='events' data=$event}">{$event.title|escape:'html'}</a>
+                        <a href="{ia_url type='url' item='events' data=$event}">{$event.title|escape}</a>
                     </h4>
                     <div class="media-date">
                         {if $event.date_end|strtotime > $smarty.server.REQUEST_TIME}
-                            <span class="text-success"><span class="fa fa-clock-o"></span> {$event.date} - {$event.date_end}</span>
+                            <span class="text-success"><span class="fa fa-clock-o"></span> {$event.date|date_format:$core.config.datetime_format} - {$event.date_end|date_format:$core.config.datetime_format}</span>
                         {else}
-                            <span class="fa fa-clock-o"></span> {$event.date} - {$event.date_end}
+                            <span class="fa fa-clock-o"></span> {$event.date|date_format:$core.config.datetime_format} - {$event.date_end|date_format:$core.config.datetime_format}
                         {/if}
-                        {if $event.venue}, <br><span class="fa fa-map-marker"></span> {$event.venue|escape:'html'}{/if}
+                        {if $event.venue}, <br><span class="fa fa-map-marker"></span> {$event.venue|escape}{/if}
                     </div>
 
                     {if !empty($event.summary)}

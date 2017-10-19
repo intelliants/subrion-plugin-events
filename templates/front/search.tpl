@@ -1,21 +1,21 @@
 <div class="ia-items events">
     {foreach $entries as $entry}
         <div class="media ia-item ia-item--border event">
-            {if $entry.image}
+            {if !empty($entry.image)}
                 <a href="{$entry.url}" class="media-object pull-left">{printImage imgfile=$entry.image width=100 height=100 class='img-rounded img-responsive'}</a>
             {else}
-                <a href="{$entry.url}" class="media-object pull-left"><img src="{$smarty.const.IA_CLEAR_URL}plugins/events/templates/front/img/preview-image.png" alt="{$entry.title}" width="100" height="100" class="img-rounded img-responsive"></a>
+                <a href="{$entry.url}" class="media-object pull-left"><img src="{$smarty.const.IA_CLEAR_URL}modules/events/templates/front/img/preview-image.png" alt="{$entry.title}" width="100" height="100" class="img-rounded img-responsive"></a>
             {/if}
 
             <div class="media-body">
                 <h4 class="media-heading">
-                    <a href="{$entry.url}">{$entry.title|escape:'html'}</a>
+                    <a href="{$entry.url}">{$entry.title|escape}</a>
                 </h4>
                 <div class="media-date">
                     {if $entry.date_end|strtotime > $smarty.server.REQUEST_TIME}
-                        <span class="text-success"><span class="fa fa-clock-o"></span> {$entry.date} - {$entry.date_end}</span>
+                        <span class="text-success"><span class="fa fa-clock-o"></span> {$entry.date|date_format:$core.config.date_format} - {$entry.date_end|date_format:$core.config.date_format}</span>
                     {else}
-                        <span class="fa fa-clock-o"></span> {$entry.date} - {$entry.date_end}
+                        <span class="fa fa-clock-o"></span> {$entry.date|date_format:$core.config.date_format} - {$entry.date_end|date_format:$core.config.date_format}
                     {/if}
                     {if $entry.venue}, <br><span class="fa fa-map-marker"></span> {$entry.venue}{/if}
                 </div>

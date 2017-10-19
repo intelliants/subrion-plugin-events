@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Subrion - open source content management system
- * Copyright (C) 2016 Intelliants, LLC <http://www.intelliants.com>
+ * Copyright (C) 2017 Intelliants, LLC <https://intelliants.com>
  *
  * This file is part of Subrion.
  *
@@ -20,7 +20,7 @@
  * along with Subrion. If not, see <http://www.gnu.org/licenses/>.
  *
  *
- * @link http://www.subrion.org/
+ * @link https://subrion.org/
  *
  ******************************************************************************/
 
@@ -32,7 +32,7 @@ if ($iaView->getRequestType() == iaView::REQUEST_HTML) {
         return iaView::errorPage(iaView::ERROR_NOT_FOUND, iaLanguage::get('event_not_found'));
     }
 
-    $iaEvent = $iaCore->factoryPlugin(IA_CURRENT_MODULE);
+    $iaEvent = $iaCore->factoryModule('event', IA_CURRENT_MODULE);
 
     $item = $iaEvent->get(['id' => $eventId], 0, 1, false, true, true);
 
@@ -71,7 +71,6 @@ if ($iaView->getRequestType() == iaView::REQUEST_HTML) {
         'description' => substr(iaSanitize::html(iaSanitize::tags($item['description'])), 0, 200) . '...'
     ];
     if ($image = $item['image']) {
-
         $openGraph['image'] = IA_CLEAR_URL . 'uploads/' . $image['path'] . 'thumbnail/' .  $image['file'];
     }
 
