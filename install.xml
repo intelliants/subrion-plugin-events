@@ -35,7 +35,6 @@
     <config group="events" name="events_number_future" type="text" description="Number of events in Future Events block">10</config>
     <config group="events" name="events_number_past" type="text" description="Number of events in Past Events block">5</config>
     <config group="events" name="events_number_rss" type="text" description="Number of events per feed">10</config>
-    <config group="events" name="events_gmap_key" type="text" description="Google Map API key" private="0">AIzaSyCZiuPhCJ4MsjhcPARMd5wFPVFtFtdOgCc</config>
     <config group="email_templates" type="divider" description="Events"><![CDATA[]]></config>
     <config group="email_templates" type="radio" name="new_event_notification" values="1,0" description="New Event Submission">1</config>
     <config group="email_templates" type="text" name="new_event_notification_subject">New event added by guest at {%SITE_NAME%}</config>

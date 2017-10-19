@@ -44,7 +44,7 @@ $(function () {
         mapInitialize();
     }
     else {
-        loadScript(location.protocol + '//maps.googleapis.com/maps/api/js?callback=mapInitialize&key=' + intelli.config.events_gmap_key);
+        loadScript(location.protocol + '//maps.googleapis.com/maps/api/js?callback=mapInitialize&key=' + intelli.config.maps_api_key);
     }
 
     $('.js-delete-event').on('click', function (e) {

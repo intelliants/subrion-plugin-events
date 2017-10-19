@@ -15,7 +15,7 @@
 
     {capture name="venue" append="field_after"}
         <div class="row hidden" id="js-gmap-wrapper">
-            <script type="text/javascript" src="http{if $core.config.https}s{/if}://maps.google.com/maps/api/js?sensor=false&key={$core.config.events_gmap_key}"></script>
+            <script type="text/javascript" src="//maps.google.com/maps/api/js?sensor=false&key={$core.config.maps_api_key}"></script>
             <div class="gmap-data hidden" id="item-gmap-data">
                 <input type="hidden" name="longitude" value="{if isset($smarty.post.longitude)}{$smarty.post.longitude}{elseif isset($item.longitude)}{$item.longitude}{/if}">
                 <input type="hidden" name="latitude" value="{if isset($smarty.post.latitude)}{$smarty.post.latitude}{elseif isset($item.latitude)}{$item.latitude}{/if}">
