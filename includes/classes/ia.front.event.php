@@ -110,6 +110,11 @@ SQL;
         return $baseUrl . $uri;
     }
 
+    public function getUrl(array $data)
+    {
+        return $this->url('view', $data);
+    }
+
     public function coreSearch($query, $start, $limit, $order)
     {
         $where = '(e.`title_:lang` LIKE :query OR e.`description` LIKE :query OR e.`venue` LIKE :query)';
