@@ -88,7 +88,6 @@ if (iaView::REQUEST_HTML == $iaView->getRequestType()) {
     if (isset($iaCore->requestPath[0])) {
         switch (true) {
             case ('date' == $iaCore->requestPath[0]):
-
                 $offset = ['year' => 1, 'month' => 2, 'day' => 3];
                 $date = [
                     $offset['year'] => intval($iaCore->requestPath[1]),
@@ -129,6 +128,8 @@ if (iaView::REQUEST_HTML == $iaView->getRequestType()) {
                 $iaView->title($category['title_' . $iaCore->language['iso']]);
 
                 $events = $iaEvent->get(['category_id' => $category['id']], $start, $limit);
+
+                $paginator['template'] = IA_SELF . '?page={page}';
 
                 break;
 

@@ -48,7 +48,7 @@ class iaBackendController extends iaAbstractControllerModuleBackend
         $this->_path = IA_ADMIN_URL . $this->getName() . IA_URL_DELIMITER;
     }
 
-    protected function _modifyGridParams(&$conditions, &$values, array $params)
+    protected function _gridModifyParams(&$conditions, &$values, array $params)
     {
         if (!empty($params['text'])) {
             $conditions[] = '(e.`title` LIKE :text OR e.`description` LIKE :text)';
@@ -135,6 +135,7 @@ SQL;
     protected function _preSaveEntry(array &$entry, array $data, $action)
     {
         parent::_preSaveEntry($entry, $data, $action);
+
         $entry['category_id'] = $data['category_id'];
         $entry['longitude'] = $data['longitude'];
         $entry['latitude'] = $data['latitude'];
