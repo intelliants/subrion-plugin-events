@@ -23,7 +23,6 @@
  * @link https://subrion.org/
  *
  ******************************************************************************/
-
 $iaDb->setTable('events');
 $iaUtil = iaCore::util();
 $iaEvent = $iaCore->factoryModule('event', IA_CURRENT_MODULE);
@@ -165,6 +164,9 @@ if (iaView::REQUEST_HTML == $iaView->getRequestType()) {
         $paginator['template'] = IA_URL . 'events/search/?term=' . $term . '&page={page}';
 
         $iaView->assign('term', $term);
+    } elseif ('event_past' == $iaView->name()) {
+        $events = $iaEvent->get([], $start, $limit, 'e.`date_end` < NOW()');
+        $paginator['template'] = IA_SELF . '?page={page}';
     } else {
         $events = $iaEvent->get([], $start, $limit, false, false);
     }

@@ -48,6 +48,7 @@
         <page name="events" url="events/" menus="main">Events</page>
         <page name="event_add" url="events/add/" filename="manage" menus="account" action="add">Add Event</page>
         <page name="event_my" url="profile/events/" filename="index" menus="account">My Events</page>
+        <page name="event_past" url="events/past/" filename="index" menus="main">Past Events</page>
         <page name="event_edit" url="events/edit/" filename="manage" action="edit">Edit Event</page>
         <page name="event_search" url="events/search/" filename="index">Searching for Events</page>
         <page name="event_details" url="event/" filename="view">Event Details</page>
