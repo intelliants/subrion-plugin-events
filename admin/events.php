@@ -51,7 +51,8 @@ class iaBackendController extends iaAbstractControllerModuleBackend
     protected function _gridModifyParams(&$conditions, &$values, array $params)
     {
         if (!empty($params['text'])) {
-            $conditions[] = '(e.`title` LIKE :text OR e.`description` LIKE :text)';
+            $langCode = $this->_iaCore->language['iso'];
+            $conditions[] = "(e.`title_{$langCode}` LIKE :text OR e.`description_{$langCode}` LIKE :text)";
             $values['text'] = '%' . iaSanitize::sql($params['text']) . '%';
         }
     }
