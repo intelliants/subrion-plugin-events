@@ -26,8 +26,7 @@
 
 if ($iaView->getRequestType() == iaView::REQUEST_HTML) {
     $iaField = $iaCore->factory('field');
-    $iaEvent = $iaCore->factoryPlugin(IA_CURRENT_MODULE);
-
+    $iaEvent = $iaCore->factoryModule('event', IA_CURRENT_MODULE);
     $iaDb->setTable($iaEvent::getTable());
     $listing = [];
     iaBreadcrumb::add(iaLanguage::get('events'), IA_URL . 'events/');
