@@ -72,6 +72,8 @@ if ($iaView->getRequestType() == iaView::REQUEST_HTML) {
             if (iaCore::ACTION_ADD == $pageAction) {
                 $item['status'] = $iaCore->get('events_auto_approval') ? iaCore::STATUS_ACTIVE : iaCore::STATUS_INACTIVE;
                 $item['category_id'] = (int)$_POST['category_id'];
+                $item['longitude'] = $_POST['longitude'];
+                $item['latitude'] = $_POST['latitude'];
                 $item['id'] = $iaEvent->insert($item);
                 $result = (bool)$item['id'];
                 $messages[] = iaLanguage::get('listing_successfully_submitted');
@@ -81,6 +83,8 @@ if ($iaView->getRequestType() == iaView::REQUEST_HTML) {
                 }
 
                 $item['category_id'] = (int)$_POST['category_id'];
+                $item['longitude'] = $_POST['longitude'];
+                $item['latitude'] = $_POST['latitude'];
                 $item['venue'] = iaSanitize::tags($_POST['venue']);
                 $item['id'] = $listing['id'];
 
