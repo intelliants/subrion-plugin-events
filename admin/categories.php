@@ -30,7 +30,7 @@ class iaBackendController extends iaAbstractControllerModuleBackend
 
     protected $_table = 'events_categories';
 
-    protected $_itemName = 'events_categories';
+    protected $_itemName = 'eventscat';
 
     protected $_gridColumns = ['title', 'slug', 'status'];
     protected $_gridFilters = ['status' => self::EQUAL, 'title' => self::LIKE];

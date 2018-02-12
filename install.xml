@@ -9,8 +9,8 @@
     <compatibility>4.1.5</compatibility>
 
     <items>
-        <item main="event_add,event_edit">events</item>
-        <item payable="0">events_categories</item>
+        <item pages="event_add,event_edit">event</item>
+        <item payable="0" table_name="events_categories">eventscat</item>
     </items>
 
     <actions>
@@ -62,23 +62,23 @@
     </permissions>
 
     <fields_groups>
-        <group item="events" name="general" title="General"><![CDATA[]]></group>
-        <group item="events_categories" name="general" title="General"><![CDATA[]]></group>
+        <group item="event" name="general" title="General"><![CDATA[]]></group>
+        <group item="eventscat" name="general" title="General"><![CDATA[]]></group>
     </fields_groups>
 
     <fields>
 
-        <field name="title" item="events" type="text" group="general" length="70" required="1" multilingual="1" page="event_edit,event_add">Title</field>
-        <field name="date" item="events" type="date" group="general" timepicker="1" page="event_edit,event_add">Date Start</field>
-        <field name="date_end" item="events" type="date" group="general" timepicker="1" page="event_edit,event_add">Date End</field>
-        <!--<field name="repeat" item="events" type="combo" group="general" values="none||Once,monthly||Monthly,yearly||Yearly" default="none" required="1" page="event_edit,event_add">Repeat</field>-->
-        <field name="summary" item="events" type="textarea" group="general" editor="0" required="0" multilingual="1" adminonly="1">Summary</field>
-        <field name="description" item="events" type="textarea" group="general" editor="1" multilingual="1" page="event_edit,event_add">Description</field>
-        <field name="image" item="events" type="image" group="general" thumb_width="400" thumb_height="300" width="1200" height="900" prefix="events_" editable="0" page="event_edit,event_add">Image</field>
-        <field name="venue" item="events" type="text" group="general" length="255" page="event_edit,event_add">Venue</field>
+        <field name="title" item="event" type="text" group="general" length="70" required="1" multilingual="1" page="event_edit,event_add">Title</field>
+        <field name="date" item="event" type="date" group="general" timepicker="1" page="event_edit,event_add">Date Start</field>
+        <field name="date_end" item="event" type="date" group="general" timepicker="1" page="event_edit,event_add">Date End</field>
+        <!--<field name="repeat" item="event" type="combo" group="general" values="none||Once,monthly||Monthly,yearly||Yearly" default="none" required="1" page="event_edit,event_add">Repeat</field>-->
+        <field name="summary" item="event" type="textarea" group="general" editor="0" required="0" multilingual="1" adminonly="1">Summary</field>
+        <field name="description" item="event" type="textarea" group="general" editor="1" multilingual="1" page="event_edit,event_add">Description</field>
+        <field name="image" item="event" type="image" group="general" thumb_width="400" thumb_height="300" width="1200" height="900" prefix="events_" editable="0" page="event_edit,event_add">Image</field>
+        <field name="venue" item="event" type="text" group="general" length="255" page="event_edit,event_add">Venue</field>
 
-        <field name="title" item="events_categories" type="text" group="general" length="70" required="1" multilingual="1">Title</field>
-        <field name="slug" item="events_categories" type="text" group="general" length="100" adminonly="1">Slug</field>
+        <field name="title" item="eventscat" type="text" group="general" length="70" required="1" multilingual="1">Title</field>
+        <field name="slug" item="eventscat" type="text" group="general" length="100" adminonly="1">Slug</field>
     </fields>
 
     <phrases>
