@@ -11,4 +11,4 @@
 
 <div id="event-calendar" data-date="{$smarty.now|date_format:'%Y-%m-%d'}" data-date-format="yyyy-mm-dd"></div>
 
-{ia_add_media files="js:_IA_URL_modules/events/js/frontend/calendar-additions, css:_IA_URL_modules/events/templates/front/css/calendar, css:_IA_URL_modules/events/templates/front/css/datepicker"}
+{ia_add_media files="js:_IA_URL_modules/events/js/frontend/calendar-additions"}

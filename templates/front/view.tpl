@@ -1,7 +1,7 @@
 <div class="event-view">
     {if !empty($item.image)}
         <div class="event-view__image m-b">
-            <div class="ia-item-image">{ia_image file=$item.image class='img-responsive'}</div>
+            <div class="ia-item-image">{ia_image file=$item.image type='large' class='img-responsive'}</div>
         </div>
     {/if}
 

@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Subrion - open source content management system
- * Copyright (C) 2017 Intelliants, LLC <https://intelliants.com>
+ * Copyright (C) 2018 Intelliants, LLC <https://intelliants.com>
  *
  * This file is part of Subrion.
  *
@@ -31,7 +31,9 @@ $iaUsers = $iaCore->factory('users');
 
 if (iaView::REQUEST_JSON == $iaView->getRequestType()) {
     if (isset($_GET['action']) && $_GET['action'] == 'get_by_date') {
+
         $date = $_GET['date'];
+        $data = $iaEvent->getByDate($date, 2);
 
         $iaView->jsonp($data);
     }
@@ -179,6 +181,8 @@ if (iaView::REQUEST_HTML == $iaView->getRequestType()) {
     $iaView->set('actions', $pageActions);
 
     $iaView->display('index');
+
+    $iaView->add_css('_IA_URL_modules/events/templates/front/css/search');
 }
 //Added code to display correct XML / RSS => rss.php can be left out now
 //Also added event start & end date

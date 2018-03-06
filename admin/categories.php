@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Subrion - open source content management system
- * Copyright (C) 2017 Intelliants, LLC <https://intelliants.com>
+ * Copyright (C) 2018 Intelliants, LLC <https://intelliants.com>
  *
  * This file is part of Subrion.
  *
@@ -67,6 +67,13 @@ class iaBackendController extends iaAbstractControllerModuleBackend
             if (empty($entry[$fieldName])) {
                 $this->addMessage(iaLanguage::getf('field_is_empty', ['field' => iaLanguage::get($fieldName)]), false);
             }
+        }
+
+        $where = 'slug = :slug && id != :id';
+        $this->_iaDb->bind($where, ['slug' => $entry['slug'], 'id' => $this->getEntryId()]);
+
+        if ($this->_iaDb->exists($where, null, $this->getTable())) {
+            $this->addMessage('category_already_exists');
         }
 
         return !$this->getMessages();

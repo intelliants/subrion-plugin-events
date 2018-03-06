@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Subrion - open source content management system
- * Copyright (C) 2017 Intelliants, LLC <https://intelliants.com>
+ * Copyright (C) 2018 Intelliants, LLC <https://intelliants.com>
  *
  * This file is part of Subrion.
  *
@@ -48,4 +48,7 @@ if (iaView::REQUEST_HTML == $iaView->getRequestType()) {
     $iaView->assign('events', $events);
 
     $iaView->iaSmarty->ia_add_media(['files' => 'moment, datepicker'], $iaView->iaSmarty);
+
+    $iaView->add_css('_IA_URL_modules/events/templates/front/css/calendar');
+    $iaView->add_css('_IA_URL_modules/events/templates/front/css/datepicker');
 }

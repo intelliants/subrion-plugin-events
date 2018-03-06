@@ -1,5 +1,10 @@
 $(function () {
+
     var timeDelay = 300;
+
+    $(this).ready(function () {
+        $('li.picker-switch.accordion-toggle').css('display', 'none');
+    })
 
     $('#event-calendar').datetimepicker({
         inline: true,
@@ -17,17 +22,17 @@ $(function () {
         $('#event-popup .progress').show();
         $('#event-popup .ia-items').remove();
         $('#event-popup #view-all-events').hide();
-        $('#event-popup #view-all-events').attr('href', intelli.config.baseurl + 'events/date/' + formattedDate.replace(/-/g, '/') + '/');
+        $('#event-popup #view-all-events').attr('href', intelli.config.url + 'events/date/' + formattedDate.replace(/-/g, '/') + '/');
 
-        console.log(intelli.config.ia_url);
 
-        vUrl = intelli.config.ia_url + intelli.config.lang + '/events/read.json';
+        vUrl = intelli.config.url + intelli.config.lang + '/events/read.json';
         options = {
             action: 'get_by_date',
             date: formattedDate
         };
 
         $.get(vUrl, options, function (data) {
+
             data = eval('(' + data + ')');
 
             strLimit = 100;
@@ -67,6 +72,7 @@ $(function () {
                 $('#event-popup').append(out);
             }, 500);
         });
+
     });
 
     $('#event-popup .close').click(function () {

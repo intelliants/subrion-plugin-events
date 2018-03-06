@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Subrion - open source content management system
- * Copyright (C) 2017 Intelliants, LLC <https://intelliants.com>
+ * Copyright (C) 2018 Intelliants, LLC <https://intelliants.com>
  *
  * This file is part of Subrion.
  *
@@ -250,6 +250,8 @@ SQL;
     {
         $conditions = "DATE_FORMAT(e.`date`, '%Y-%m-%d') <= '" . $date . "' AND "
             . "DATE_FORMAT(e.`date_end`, '%Y-%m-%d') >= '" . $date . "'";
+
+
         return $this->_get(['status' => iaCore::STATUS_ACTIVE], $conditions, 0, $limit);
     }
 
