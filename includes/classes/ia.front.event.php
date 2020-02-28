@@ -293,7 +293,7 @@ SQL;
         }
 
         $currentData = $this->iaDb->row(iaDb::ALL_COLUMNS_SELECTION, iaDb::convertIds($id), self::getTable());
-        $result = (bool)$this->iaDb->update($itemData, iaDb::convertIds($id), null, self::getTable());
+        $result = $this->iaDb->update($itemData, iaDb::convertIds($id), null, self::getTable());
 
         if ($result) {
             $this->iaCore->startHook('phpListingUpdated', [
